@@ -43,9 +43,13 @@ jobs:
       - name: Prepare Release Asset
         run: |
           mkdir -p release-assets
-          JAR_FILE=$(find build/libs -name "GoosBoards-*.jar" ! -name "*-original.jar" | head -n 1)
+          JAR_FILE=$(find build/libs -maxdepth 1 -iname "*goosboards*.jar" ! -name "*-original.jar" | head -n 1)
+          if [ -z "$JAR_FILE" ]; then
+            JAR_FILE=$(find build/libs -maxdepth 1 -name "*.jar" ! -name "*-original.jar" | head -n 1)
+          fi
           if [ -z "$JAR_FILE" ]; then
             echo "Error: No GoosBoards jar found in build/libs/"
+            ls -la build/libs/ || true
             exit 1
           fi
           cp "$JAR_FILE" release-assets/GoosBoards.jar

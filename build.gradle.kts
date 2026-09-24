@@ -39,6 +39,7 @@ dependencies {
 }
 
 tasks.shadowJar {
+    archiveBaseName.set("GoosBoards")
     archiveClassifier.set("")
     relocate("com.github.benmanes.caffeine", "me.goosbanny.goosboards.libs.caffeine")
     relocate("net.openhft", "me.goosbanny.goosboards.libs.zah")
