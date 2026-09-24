@@ -67,9 +67,10 @@ Find answers to common operational questions, server configuration hurdles, and 
 
 ---
 
-### Issue: Animated GIFs are dropping server tick rate (TPS)
-* **Symptom**: Server experiences lag spikes while rendering large animated displays.
+### Issue: High host CPU or bandwidth saturation from animated GIFs
+* **Context**: All GIF decoding, color quantization, and packet serialization run **100% asynchronously** on background worker pools, meaning GoosBoards places **zero synchronous workload on the main server tick loop**.
+* **Cause**: On budget hosts with limited physical CPU cores (e.g. 1–2 vCPU VPS), heavily uncapped GIF animations can saturate overall host CPU capacity, causing the operating system scheduler to starve server tick threads of CPU time. Furthermore, unthrottled 20 FPS animations on massive displays consume high network bandwidth for clients with slower connections.
 * **Fix**:
-  1. In `config.yml`, set `gif.max-fps: 10` or `15` to limit the rendering frequency.
-  2. Increase `performance.render-tick-interval` from `1` to `2` (10 FPS).
-  3. Ensure the GIF dimensions match the display aspect ratio so runtime scaling is minimized.
+  1. In `config.yml`, set `gif.max-fps: 10` or `15` to cap background animation framerates.
+  2. Increase `performance.render-tick-interval` from `1` to `2` (10 FPS cadence).
+  3. Ensure source GIF dimensions closely match the target board resolution to minimize runtime resizing calculations.
