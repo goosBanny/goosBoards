@@ -157,8 +157,7 @@ public final class BatchedMapSender {
         }
 
         int subLen = columns * rows;
-        byte[] existing = packet.getData();
-        byte[] subData = (existing != null && existing.length == subLen) ? existing : new byte[subLen];
+        byte[] subData = new byte[subLen];
         for (int r = 0; r < rows; r++) {
             int srcPos = (startY + r) * TILE_SIZE + startX;
             int dstPos = r * columns;

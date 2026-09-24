@@ -17,6 +17,7 @@ public class QuarantinedIdAllocator {
     private final AtomicInteger counter;
     private final LinkedBlockingDeque<QuarantineEntry> quarantine;
     private final IntOpenHashSet quarantineSet;
+    private final it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue expiredPool;
     private final LongSupplier clock;
 
     private record QuarantineEntry(int id, long expiresAt) {}
@@ -34,10 +35,14 @@ public class QuarantinedIdAllocator {
         this.counter = new AtomicInteger(initialCounter);
         this.quarantine = new LinkedBlockingDeque<>(QUARANTINE_CAPACITY);
         this.quarantineSet = new IntOpenHashSet(QUARANTINE_CAPACITY);
+        this.expiredPool = new it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue();
     }
 
     public int allocate() {
         synchronized (quarantine) {
+            if (!expiredPool.isEmpty()) {
+                return expiredPool.dequeueInt();
+            }
             QuarantineEntry entry = quarantine.peekFirst();
             if (entry != null && clock.getAsLong() >= entry.expiresAt()) {
                 quarantine.pollFirst();
@@ -58,15 +63,27 @@ public class QuarantinedIdAllocator {
     }
 
     public void free(int id) {
-        long expiresAt = clock.getAsLong() + QUARANTINE_DURATION_MS;
+        long now = clock.getAsLong();
+        long expiresAt = now + QUARANTINE_DURATION_MS;
         synchronized (quarantine) {
             if (!quarantineSet.add(id)) {
                 return; // Guard against double-free recycling in O(1)
             }
+            // Drain any expired entries to make room for incoming IDs
+            while (quarantine.size() >= QUARANTINE_CAPACITY) {
+                QuarantineEntry head = quarantine.peekFirst();
+                if (head != null && now >= head.expiresAt()) {
+                    quarantine.pollFirst();
+                    quarantineSet.remove(head.id());
+                    expiredPool.enqueue(head.id());
+                } else {
+                    break;
+                }
+            }
             boolean offered = quarantine.offer(new QuarantineEntry(id, expiresAt));
             if (!offered) {
                 quarantineSet.remove(id);
-                LOGGER.fine(() -> "Quarantine queue full, discarded ID: " + id);
+                LOGGER.fine(() -> "Quarantine queue full with non-expired entries, discarded ID: " + id);
             }
         }
     }

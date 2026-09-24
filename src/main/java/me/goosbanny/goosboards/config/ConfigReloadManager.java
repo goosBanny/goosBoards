@@ -22,6 +22,7 @@ import me.goosbanny.goosboards.integration.placeholder.PlaceholderService;
 import me.goosbanny.goosboards.display.DistanceLodTracker;
 import me.goosbanny.goosboards.render.cache.RenderStateCache;
 import me.goosbanny.goosboards.scene.BoardConfig;
+import me.goosbanny.goosboards.scene.BoardConfig.SceneDefinition;
 import me.goosbanny.goosboards.scene.parser.BoardYamlParser;
 import me.goosbanny.goosboards.scene.component.visual.GifComponent;
 import me.goosbanny.goosboards.scene.component.visual.Head2DComponent;
@@ -506,6 +507,11 @@ public class ConfigReloadManager {
         if (board != null && board.settings().persistent() && !board.settings().resetOnDisappear()) {
             return;
         }
+        if (board != null && board.scenes() != null) {
+            for (SceneDefinition scene : board.scenes().values()) {
+                me.goosbanny.goosboards.scene.component.container.ScrollPaneComponent.clearViewerScrolls(scene.components(), playerId);
+            }
+        }
         Map<UUID, String> pMap = playerActiveScenes.get(boardId);
         if (pMap != null && pMap.remove(playerId) != null) {
             if (renderEngine != null) {
@@ -519,6 +525,11 @@ public class ConfigReloadManager {
             return;
         for (Map.Entry<String, BoardConfig> entry : getActiveBoards().entrySet()) {
             if (!entry.getValue().settings().persistent() || entry.getValue().settings().resetOnRejoin()) {
+                if (entry.getValue().scenes() != null) {
+                    for (SceneDefinition scene : entry.getValue().scenes().values()) {
+                        me.goosbanny.goosboards.scene.component.container.ScrollPaneComponent.clearViewerScrolls(scene.components(), playerId);
+                    }
+                }
                 Map<UUID, String> pMap = playerActiveScenes.get(entry.getKey());
                 if (pMap != null && pMap.remove(playerId) != null) {
                     if (renderEngine != null) {

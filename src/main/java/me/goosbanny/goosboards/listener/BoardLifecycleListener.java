@@ -108,14 +108,8 @@ public class BoardLifecycleListener implements Listener {
         PlaceholderService.clearViewer(id);
         if (reloadManager != null) {
             reloadManager.resetPlayerAllNonPersistentScenes(id);
-            for (BoardConfig config : reloadManager.getActiveBoards().values()) {
-                if (config.scenes() != null) {
-                    for (SceneDefinition scene : config.scenes().values()) {
-                        clearViewerScrolls(scene.components(), id);
-                    }
-                }
-            }
         }
+        clearAllScrollsForPlayer(id);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -187,6 +181,7 @@ public class BoardLifecycleListener implements Listener {
         if (reloadManager != null) {
             reloadManager.resetPlayerAllNonPersistentScenes(id);
         }
+        clearAllScrollsForPlayer(id);
 
         if (renderEngine != null) {
             renderEngine.onPlayerQuit(id);
@@ -221,6 +216,8 @@ public class BoardLifecycleListener implements Listener {
         if (event == null || event.getPlayer() == null) return;
         Player player = event.getPlayer();
         UUID id = player.getUniqueId();
+
+        clearAllScrollsForPlayer(id);
 
         if (renderEngine != null) {
             renderEngine.onPlayerQuit(id);
@@ -273,13 +270,14 @@ public class BoardLifecycleListener implements Listener {
         }
     }
 
-    private void clearViewerScrolls(List<UIComponent> components, UUID viewerId) {
-        if (components == null || viewerId == null) return;
-        for (UIComponent comp : components) {
-            if (comp instanceof ScrollPaneComponent pane) {
-                pane.clearViewerScroll(viewerId);
+    private void clearAllScrollsForPlayer(UUID id) {
+        if (id == null || reloadManager == null) return;
+        for (BoardConfig config : reloadManager.getActiveBoards().values()) {
+            if (config.scenes() != null) {
+                for (SceneDefinition scene : config.scenes().values()) {
+                    ScrollPaneComponent.clearViewerScrolls(scene.components(), id);
+                }
             }
-            clearViewerScrolls(comp.getChildren(), viewerId);
         }
     }
 

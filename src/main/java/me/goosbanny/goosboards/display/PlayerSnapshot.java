@@ -19,6 +19,7 @@ public record PlayerSnapshot(
         double dirX,
         double dirY,
         double dirZ,
+        int ticksLived,
         Player player
 ) {
     public PlayerSnapshot(
@@ -29,8 +30,24 @@ public record PlayerSnapshot(
             double y,
             double z,
             double eyeHeight,
+            double dirX,
+            double dirY,
+            double dirZ,
             Player player
     ) {
-        this(id, name, worldName, x, y, z, eyeHeight, 0.0, 0.0, 1.0, player);
+        this(id, name, worldName, x, y, z, eyeHeight, dirX, dirY, dirZ, 0, player);
+    }
+
+    public PlayerSnapshot(
+            UUID id,
+            String name,
+            String worldName,
+            double x,
+            double y,
+            double z,
+            double eyeHeight,
+            Player player
+    ) {
+        this(id, name, worldName, x, y, z, eyeHeight, 0.0, 0.0, 1.0, 0, player);
     }
 }

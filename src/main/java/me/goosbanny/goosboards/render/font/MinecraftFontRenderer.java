@@ -155,6 +155,10 @@ public final class MinecraftFontRenderer {
             return new byte[Math.max(1, width * height)];
         }
 
+        String cleanText = (rawText.indexOf('\n') >= 0 || rawText.indexOf('\r') >= 0)
+                ? rawText.replace("\r\n", " ").replace('\n', ' ').replace('\r', ' ')
+                : rawText;
+
         int effectiveScale = Math.max(1, scale);
         int baseFontSize;
         if (fontSize > 0) {
@@ -174,7 +178,7 @@ public final class MinecraftFontRenderer {
             g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
 
-            List<TextSpan> spans = parseSpans(rawText, defaultColor);
+            List<TextSpan> spans = parseSpans(cleanText, defaultColor);
 
             // Compute total text width
             int totalWidth = 0;

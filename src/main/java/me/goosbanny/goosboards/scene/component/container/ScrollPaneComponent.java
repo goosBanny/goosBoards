@@ -19,8 +19,8 @@ public class ScrollPaneComponent extends UIComponent {
 
     private int scrollInnerWidth = 0;
     private int scrollInnerHeight = 0;
-    private int scrollOffsetX = 0;
-    private int scrollOffsetY = 0;
+    private volatile int scrollOffsetX = 0;
+    private volatile int scrollOffsetY = 0;
 
     private boolean mouseScroll = true;
     private boolean mouseScrollVertical = true;
@@ -31,6 +31,8 @@ public class ScrollPaneComponent extends UIComponent {
     private int lastTilesH = 0;
 
     private final Map<UUID, Integer> viewerScrollOffsets = new ConcurrentHashMap<>();
+    private final Map<UUID, Integer> viewerScrollOffsetsX = new ConcurrentHashMap<>();
+    private final Map<UUID, CanvasBufferImpl> perViewerInnerBuffers = new ConcurrentHashMap<>();
 
     public ScrollPaneComponent(String id, boolean contextDependent) {
         super(id, contextDependent);
@@ -55,6 +57,20 @@ public class ScrollPaneComponent extends UIComponent {
         viewerScrollOffsets.put(viewerId, clamped);
     }
 
+    public int getEffectiveScrollOffsetX(UUID viewerId) {
+        if (viewerId != null && mouseScroll) {
+            return viewerScrollOffsetsX.getOrDefault(viewerId, scrollOffsetX);
+        }
+        return scrollOffsetX;
+    }
+
+    public void setViewerScrollOffsetX(UUID viewerId, int offset) {
+        if (viewerId == null) return;
+        int maxScroll = Math.max(0, scrollInnerWidth - getBounds().width());
+        int clamped = Math.max(0, Math.min(offset, maxScroll));
+        viewerScrollOffsetsX.put(viewerId, clamped);
+    }
+
     public boolean scroll(UUID viewerId, int delta) {
         if (mouseScrollVertical) {
             int current = getEffectiveScrollOffsetY(viewerId);
@@ -66,11 +82,13 @@ public class ScrollPaneComponent extends UIComponent {
             setViewerScrollOffsetY(viewerId, next);
             return true;
         } else {
-            int next = Math.max(0, Math.min(this.scrollOffsetX + delta, Math.max(0, scrollInnerWidth - getBounds().width())));
-            if (this.scrollOffsetX == next) {
+            int current = getEffectiveScrollOffsetX(viewerId);
+            int maxScroll = Math.max(0, scrollInnerWidth - getBounds().width());
+            int next = Math.max(0, Math.min(current + delta, maxScroll));
+            if (current == next) {
                 return false;
             }
-            this.scrollOffsetX = next;
+            setViewerScrollOffsetX(viewerId, next);
             return true;
         }
     }
@@ -78,6 +96,24 @@ public class ScrollPaneComponent extends UIComponent {
     public void clearViewerScroll(UUID viewerId) {
         if (viewerId != null) {
             viewerScrollOffsets.remove(viewerId);
+            viewerScrollOffsetsX.remove(viewerId);
+            perViewerInnerBuffers.remove(viewerId);
+        }
+    }
+
+    public void clearAllViewerScrolls() {
+        viewerScrollOffsets.clear();
+        viewerScrollOffsetsX.clear();
+        perViewerInnerBuffers.clear();
+    }
+
+    public static void clearViewerScrolls(List<UIComponent> components, UUID viewerId) {
+        if (components == null || viewerId == null) return;
+        for (UIComponent comp : components) {
+            if (comp instanceof ScrollPaneComponent pane) {
+                pane.clearViewerScroll(viewerId);
+            }
+            clearViewerScrolls(comp.getChildren(), viewerId);
         }
     }
 
@@ -97,32 +133,47 @@ public class ScrollPaneComponent extends UIComponent {
         int innerW = scrollInnerWidth > 0 ? scrollInnerWidth : visibleW;
         int innerH = scrollInnerHeight > 0 ? scrollInnerHeight : visibleH;
 
-        int effectiveOffsetY = (ctx != null && ctx.viewer() != null)
-                ? getEffectiveScrollOffsetY(ctx.viewer().getUniqueId())
-                : scrollOffsetY;
+        UUID viewerId = (ctx != null && ctx.viewer() != null) ? ctx.viewer().getUniqueId() : null;
+        int effectiveOffsetY = (viewerId != null) ? getEffectiveScrollOffsetY(viewerId) : scrollOffsetY;
+        int effectiveOffsetX = (viewerId != null) ? getEffectiveScrollOffsetX(viewerId) : scrollOffsetX;
 
         int tilesW = Math.max(1, (innerW + CanvasBufferImpl.TILE_SIZE - 1) / CanvasBufferImpl.TILE_SIZE);
         int tilesH = Math.max(1, (innerH + CanvasBufferImpl.TILE_SIZE - 1) / CanvasBufferImpl.TILE_SIZE);
 
-        if (innerBuffer == null || innerBuffer.getWidthTiles() < tilesW || innerBuffer.getHeightTiles() < tilesH) {
-            int allocW = Math.max(tilesW, innerBuffer != null ? innerBuffer.getWidthTiles() : tilesW);
-            int allocH = Math.max(tilesH, innerBuffer != null ? innerBuffer.getHeightTiles() : tilesH);
-            innerBuffer = new CanvasBufferImpl(allocW, allocH);
-            lastTilesW = allocW;
-            lastTilesH = allocH;
+        CanvasBufferImpl targetInnerBuffer;
+        if (viewerId != null) {
+            CanvasBufferImpl buf = perViewerInnerBuffers.get(viewerId);
+            if (buf == null || buf.getWidthTiles() < tilesW || buf.getHeightTiles() < tilesH) {
+                int allocW = Math.max(tilesW, buf != null ? buf.getWidthTiles() : tilesW);
+                int allocH = Math.max(tilesH, buf != null ? buf.getHeightTiles() : tilesH);
+                buf = new CanvasBufferImpl(allocW, allocH);
+                perViewerInnerBuffers.put(viewerId, buf);
+            } else {
+                buf.clear();
+            }
+            targetInnerBuffer = buf;
         } else {
-            innerBuffer.clear();
+            if (innerBuffer == null || innerBuffer.getWidthTiles() < tilesW || innerBuffer.getHeightTiles() < tilesH) {
+                int allocW = Math.max(tilesW, innerBuffer != null ? innerBuffer.getWidthTiles() : tilesW);
+                int allocH = Math.max(tilesH, innerBuffer != null ? innerBuffer.getHeightTiles() : tilesH);
+                innerBuffer = new CanvasBufferImpl(allocW, allocH);
+                lastTilesW = allocW;
+                lastTilesH = allocH;
+            } else {
+                innerBuffer.clear();
+            }
+            targetInnerBuffer = innerBuffer;
         }
 
         // Render children into intermediate inner canvas buffer
         for (UIComponent child : getChildren()) {
-            child.render(innerBuffer, ctx);
+            child.render(targetInnerBuffer, ctx);
         }
 
-        // Blit only the visible region [scrollOffsetX, effectiveOffsetY, scrollOffsetX + visibleW, effectiveOffsetY + visibleH]
-        int startX = Math.max(0, scrollOffsetX);
+        // Blit only the visible region [effectiveOffsetX, effectiveOffsetY, effectiveOffsetX + visibleW, effectiveOffsetY + visibleH]
+        int startX = Math.max(0, effectiveOffsetX);
         int startY = Math.max(0, effectiveOffsetY);
-        int endX = Math.min(innerW, scrollOffsetX + visibleW);
+        int endX = Math.min(innerW, effectiveOffsetX + visibleW);
         int endY = Math.min(innerH, effectiveOffsetY + visibleH);
 
         for (int cy = startY; cy < endY; cy++) {
@@ -131,11 +182,11 @@ public class ScrollPaneComponent extends UIComponent {
                 continue;
             }
             for (int cx = startX; cx < endX; cx++) {
-                int screenX = bounds.x() + (cx - scrollOffsetX);
+                int screenX = bounds.x() + (cx - effectiveOffsetX);
                 if (screenX < bounds.x() || screenX >= bounds.x() + visibleW) {
                     continue;
                 }
-                byte pixel = innerBuffer.getPixel(cx, cy);
+                byte pixel = targetInnerBuffer.getPixel(cx, cy);
                 if (pixel != 0) {
                     canvas.setPixel(screenX, screenY, pixel);
                 }
@@ -154,8 +205,9 @@ public class ScrollPaneComponent extends UIComponent {
             return false;
         }
 
+        int offsetX = getEffectiveScrollOffsetX(viewerId);
         int offsetY = getEffectiveScrollOffsetY(viewerId);
-        int contentX = localX + scrollOffsetX;
+        int contentX = localX + offsetX;
         int contentY = localY + offsetY;
 
         for (UIComponent child : getChildren()) {
@@ -192,8 +244,9 @@ public class ScrollPaneComponent extends UIComponent {
             return null;
         }
 
+        int offsetX = getEffectiveScrollOffsetX(viewerId);
         int offsetY = getEffectiveScrollOffsetY(viewerId);
-        int contentX = localX + scrollOffsetX;
+        int contentX = localX + offsetX;
         int contentY = localY + offsetY;
 
         List<UIComponent> kids = getChildren();

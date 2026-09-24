@@ -369,6 +369,7 @@ public class BoardRenderEngine {
                                     dir.getX(),
                                     dir.getY(),
                                     dir.getZ(),
+                                    player.getTicksLived(),
                                     player));
                         }
                     } catch (Throwable ignored) {
@@ -473,7 +474,7 @@ public class BoardRenderEngine {
                 // If player just joined and client terrain is still loading (< 10 ticks lived),
                 // wait before spawning rig,
                 // but bypass delay if player was already online and respawned
-                if (!isRespawned && snap.player().getTicksLived() < 10) {
+                if (!isRespawned && snap.ticksLived() < 10) {
                     continue;
                 }
 

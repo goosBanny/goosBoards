@@ -1,0 +1,62 @@
+name: Deploy Wiki
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'docs/**'
+      - '.github/workflows/wiki.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: "wiki-deploy"
+  cancel-in-progress: true
+
+jobs:
+  deploy-wiki:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Sync docs to GitHub Wiki
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Starting GitHub Wiki synchronization..."
+          WIKI_REPO_URL="https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.wiki.git"
+
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          TMP_WIKI_DIR=$(mktemp -d)
+
+          # Clone existing wiki repo or initialize if fresh
+          if git clone "$WIKI_REPO_URL" "$TMP_WIKI_DIR" 2>/dev/null; then
+            echo "Successfully cloned existing wiki repository."
+          else
+            echo "Wiki repository not found or uninitialized. Initializing fresh git repo..."
+            cd "$TMP_WIKI_DIR"
+            git init -b master
+            git remote add origin "$WIKI_REPO_URL"
+            cd -
+          fi
+
+          # Clean existing files (preserving .git) and copy from docs/wiki/
+          find "$TMP_WIKI_DIR" -mindepth 1 -maxdepth 1 ! -name ".git" -exec rm -rf {} +
+          cp -r docs/wiki/* "$TMP_WIKI_DIR"/
+
+          cd "$TMP_WIKI_DIR"
+          git add -A
+
+          if git diff --staged --quiet; then
+            echo "No documentation changes detected. Wiki is already up-to-date."
+          else
+            git commit -m "docs(wiki): update wiki from commit ${GITHUB_SHA::7}"
+            git push origin HEAD:master || git push origin master --force
+            echo "Wiki updated and deployed successfully."
+          fi

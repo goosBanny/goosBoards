@@ -33,6 +33,9 @@ import org.bukkit.util.Vector;
 
 import com.github.retrooper.packetevents.protocol.player.InteractionHand;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientUseItem;
+import it.unimi.dsi.fastutil.objects.Object2LongMap;
+import it.unimi.dsi.fastutil.objects.Object2LongMaps;
+import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 
 import java.util.List;
 import java.util.Map;
@@ -74,7 +77,7 @@ public class ClickPacketListener extends PacketListenerAbstract {
     private final InteractionRateLimiter rateLimiter;
     private final double maxActivationRadius;
     private final Map<UUID, LastLeftClick> lastLeftClicks = new ConcurrentHashMap<>();
-    private final Map<UUID, Long> lastRightClicks = new ConcurrentHashMap<>();
+    private final Object2LongMap<UUID> lastRightClicks;
 
     public ClickPacketListener(UniversalScheduler scheduler, DisplaySpatialIndex spatialIndex,
             InteractionRouter router) {
@@ -109,6 +112,8 @@ public class ClickPacketListener extends PacketListenerAbstract {
         this.rateLimiter = rateLimiter;
         this.raycastPool = raycastPool;
         this.maxActivationRadius = maxActivationRadius > 0.0 ? maxActivationRadius : DEFAULT_MAX_ACTIVATION_RADIUS;
+        this.lastRightClicks = Object2LongMaps.synchronize(new Object2LongOpenHashMap<>());
+        this.lastRightClicks.defaultReturnValue(0L);
     }
 
     public static ExecutorService createDefaultRaycastPool() {
@@ -189,8 +194,8 @@ public class ClickPacketListener extends PacketListenerAbstract {
             lastLeftClicks.put(uuid, new LastLeftClick(event.getPacketType(), now));
         } else if (clickType == ClickType.RIGHT_CLICK) {
             long now = System.currentTimeMillis();
-            Long last = lastRightClicks.get(uuid);
-            if (last != null && (now - last) < RIGHT_CLICK_DEBOUNCE_MS) {
+            long last = lastRightClicks.getLong(uuid);
+            if (last != 0L && (now - last) < RIGHT_CLICK_DEBOUNCE_MS) {
                 return;
             }
             lastRightClicks.put(uuid, now);
@@ -228,8 +233,8 @@ public class ClickPacketListener extends PacketListenerAbstract {
                 return;
             }
         } else if (clickType == ClickType.RIGHT_CLICK) {
-            Long last = lastRightClicks.get(uuid);
-            if (last != null && (now - last) < RIGHT_CLICK_DEBOUNCE_MS) {
+            long last = lastRightClicks.getLong(uuid);
+            if (last != 0L && (now - last) < RIGHT_CLICK_DEBOUNCE_MS) {
                 return;
             }
         }
@@ -351,7 +356,7 @@ public class ClickPacketListener extends PacketListenerAbstract {
     public void onPlayerQuit(UUID playerId) {
         if (playerId != null) {
             lastLeftClicks.remove(playerId);
-            lastRightClicks.remove(playerId);
+            lastRightClicks.removeLong(playerId);
         }
     }
 

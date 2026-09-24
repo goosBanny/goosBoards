@@ -1,7 +1,8 @@
 package me.goosbanny.goosboards.render;
 
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
+import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.LongSupplier;
@@ -21,8 +22,8 @@ public class MapIdAllocator {
     public static final long DEFAULT_QUARANTINE_MS = 1_000L;
 
     private final AtomicInteger next = new AtomicInteger(INITIAL_MAP_ID);
-    private final Set<Integer> allocatedIds = ConcurrentHashMap.newKeySet();
-    private final LinkedBlockingDeque<Integer> freePool = new LinkedBlockingDeque<>(MAX_FREE_POOL);
+    private final IntOpenHashSet allocatedIds = new IntOpenHashSet(1024);
+    private final IntArrayFIFOQueue freePool = new IntArrayFIFOQueue();
     private final LinkedBlockingDeque<QuarantineEntry> quarantine = new LinkedBlockingDeque<>(MAX_FREE_POOL);
     private final long quarantineDurationMs;
     private final LongSupplier clock;
@@ -47,11 +48,11 @@ public class MapIdAllocator {
      * Allocate a fresh map ID. Reuses a previously freed ID if available and out of
      * quarantine.
      */
-    public int allocate() {
+    public synchronized int allocate() {
         drainQuarantine();
 
-        Integer reclaimed = freePool.pollFirst();
-        if (reclaimed != null) {
+        if (!freePool.isEmpty()) {
+            int reclaimed = freePool.dequeueInt();
             allocatedIds.add(reclaimed);
             return reclaimed;
         }
@@ -63,12 +64,14 @@ public class MapIdAllocator {
     /**
      * Return a map ID to the pool for reuse. Guarded against double-free.
      */
-    public boolean free(int id) {
+    public synchronized boolean free(int id) {
         if (!allocatedIds.remove(id)) {
             return false; // double-free guard
         }
         if (quarantineDurationMs <= 0) {
-            freePool.offerLast(id); // bounded pool drops silently if saturated
+            if (freePool.size() < MAX_FREE_POOL) {
+                freePool.enqueue(id); // bounded pool drops silently if saturated
+            }
         } else {
             quarantine.offerLast(new QuarantineEntry(id, clock.getAsLong() + quarantineDurationMs));
         }
@@ -83,14 +86,16 @@ public class MapIdAllocator {
         while ((entry = quarantine.peekFirst()) != null) {
             if (now >= entry.expiresAt()) {
                 quarantine.pollFirst();
-                freePool.offerLast(entry.id());
+                if (freePool.size() < MAX_FREE_POOL) {
+                    freePool.enqueue(entry.id());
+                }
             } else {
                 break;
             }
         }
     }
 
-    public int getQuarantineSize() {
+    public synchronized int getQuarantineSize() {
         return quarantine.size();
     }
 }

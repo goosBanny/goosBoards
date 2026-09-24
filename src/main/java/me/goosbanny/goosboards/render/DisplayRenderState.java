@@ -4,6 +4,9 @@ import io.netty.channel.Channel;
 import me.goosbanny.goosboards.display.DisplayPlane;
 import me.goosbanny.goosboards.render.buffer.CanvasBufferImpl;
 import me.goosbanny.goosboards.render.diff.TileDiffer.DirtyTile;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntMaps;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -33,7 +36,7 @@ public class DisplayRenderState {
     final Set<UUID> pendingFullFlushUuids = ConcurrentHashMap.newKeySet();
     final Set<UUID> aimingViewers = ConcurrentHashMap.newKeySet();
     final Map<UUID, Set<String>> viewerHoveredComponents = new ConcurrentHashMap<>();
-    final Map<UUID, Integer> consecutiveDrops = new ConcurrentHashMap<>();
+    final Object2IntMap<UUID> consecutiveDrops;
     final Map<UUID, CanvasBufferImpl> perViewerCanvases = new ConcurrentHashMap<>();
     final List<DirtyTile> dirtyScratch;
     final List<DirtyTile> fullFlushScratch;
@@ -54,6 +57,8 @@ public class DisplayRenderState {
         int totalTiles = plane.getWidthTiles() * plane.getHeightTiles();
         this.dirtyScratch = new ArrayList<>(totalTiles);
         this.fullFlushScratch = new ArrayList<>(totalTiles);
+        this.consecutiveDrops = Object2IntMaps.synchronize(new Object2IntOpenHashMap<>());
+        this.consecutiveDrops.defaultReturnValue(0);
     }
 
     public void markNeedsRenderPass() {
@@ -74,7 +79,7 @@ public class DisplayRenderState {
         pendingFullFlushUuids.remove(viewerId);
         aimingViewers.remove(viewerId);
         viewerHoveredComponents.remove(viewerId);
-        consecutiveDrops.remove(viewerId);
+        consecutiveDrops.removeInt(viewerId);
         perViewerCanvases.remove(viewerId);
     }
 
@@ -88,15 +93,15 @@ public class DisplayRenderState {
     }
 
     public void recordDrop(UUID viewerId) {
-        consecutiveDrops.merge(viewerId, 1, Integer::sum);
+        consecutiveDrops.put(viewerId, consecutiveDrops.getInt(viewerId) + 1);
     }
 
     public void resetDrop(UUID viewerId) {
-        consecutiveDrops.remove(viewerId);
+        consecutiveDrops.removeInt(viewerId);
     }
 
     public int getDrops(UUID viewerId) {
-        return consecutiveDrops.getOrDefault(viewerId, 0);
+        return consecutiveDrops.getInt(viewerId);
     }
 
     public void clearPerViewerCanvases() {
@@ -118,6 +123,7 @@ public class DisplayRenderState {
     public void updateMapIdsAndBuffer(int[] mapIds, CanvasBufferImpl canvasBuffer) {
         this.mapIds = mapIds;
         this.canvasBuffer = canvasBuffer;
+        clearPerViewerCanvases();
     }
 
     public CanvasBufferImpl getCanvasBuffer() {
