@@ -94,18 +94,19 @@ An interactive 4×3 block demonstration board will appear with buttons, GIFs, im
 
 ## 📖 Comprehensive Documentation (Wiki)
 
-Full guides, configuration references, and component schemas are available in the **[docs/wiki/](docs/wiki/Home.md)** directory:
+Full guides, configuration references, and component schemas are available on the **[GoosBoards GitHub Wiki](https://github.com/goosBanny/goosBoards/wiki)**:
 
-* [🚀 Getting Started](docs/wiki/Getting-Started.md) — Prerequisites, installation, and headless Linux setup.
-* [⚙️ Configuration Guide](docs/wiki/Configuration-Guide.md) — Complete line-by-line documentation of `config.yml` with reference copy.
-* [📐 Board Creation & Syntax](docs/wiki/Board-Creation-&-Syntax.md) — Complete YAML schema, display rigs, and view groupings.
-* [🧩 UI Components Reference](docs/wiki/UI-Components-Reference.md) — All components: buttons, text, pixel-text, images, GIFs, avatars, scroll panes.
-* [🖱️ Actions & Interactions](docs/wiki/Actions-&-Interactions.md) — Click detection, commands, sounds, scene transitions, and Vault economy.
-* [🔄 Placeholders & Dynamic Content](docs/wiki/Placeholders-&-Dynamic-Content.md) — PlaceholderAPI tokens, update cadences, and render cache deduplication.
-* [💻 Commands & Permissions](docs/wiki/Commands-&-Permissions.md) — Detailed subcommand guide and permissions.
-* [🏗️ Architecture & Performance](docs/wiki/Architecture-&-Performance-Guide.md) — Deep dive into virtual entity allocation, Folia concurrency, and xxHash64 diffing.
-* [🗄️ Database & Persistence](docs/wiki/Database-&-Persistence-Guide.md) — Embedded H2 vs MySQL/MariaDB with HikariCP.
-* [❓ Troubleshooting & FAQ](docs/wiki/Troubleshooting-&-FAQ.md) — Frequently asked questions and common fixes.
+* [🏠 Wiki Home](https://github.com/goosBanny/goosBoards/wiki) — Overview and architecture highlights.
+* [🚀 Getting Started](https://github.com/goosBanny/goosBoards/wiki/Getting-Started) — Prerequisites, installation, and headless Linux setup.
+* [⚙️ Configuration Guide](https://github.com/goosBanny/goosBoards/wiki/Configuration-Guide) — Complete line-by-line documentation of `config.yml` with reference copy.
+* [📐 Board Creation & Syntax](https://github.com/goosBanny/goosBoards/wiki/Board-Creation-&-Syntax) — Complete YAML schema, display rigs, and view groupings.
+* [🧩 UI Components Reference](https://github.com/goosBanny/goosBoards/wiki/UI-Components-Reference) — All components: buttons, text, pixel-text, images, GIFs, avatars, scroll panes.
+* [🖱️ Actions & Interactions](https://github.com/goosBanny/goosBoards/wiki/Actions-&-Interactions) — Click detection, commands, sounds, scene transitions, and Vault economy.
+* [🔄 Placeholders & Dynamic Content](https://github.com/goosBanny/goosBoards/wiki/Placeholders-&-Dynamic-Content) — PlaceholderAPI tokens, update cadences, and render cache deduplication.
+* [💻 Commands & Permissions](https://github.com/goosBanny/goosBoards/wiki/Commands-&-Permissions) — Detailed subcommand guide and permissions.
+* [🏗️ Architecture & Performance](https://github.com/goosBanny/goosBoards/wiki/Architecture-&-Performance-Guide) — Deep dive into virtual entity allocation, Folia concurrency, and xxHash64 diffing.
+* [🗄️ Database & Persistence](https://github.com/goosBanny/goosBoards/wiki/Database-&-Persistence-Guide) — Embedded H2 vs MySQL/MariaDB with HikariCP.
+* [❓ Troubleshooting & FAQ](https://github.com/goosBanny/goosBoards/wiki/Troubleshooting-&-FAQ) — Frequently asked questions and common fixes.
 
 ---
 

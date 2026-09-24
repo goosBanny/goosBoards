@@ -1,16 +1,16 @@
-### [GoosBoards Documentation](Home.md)
+### [GoosBoards Documentation](Home)
 
-* [🏠 Home](Home.md)
-* [🚀 Getting Started](Getting-Started.md)
-* [⚙️ Configuration Guide](Configuration-Guide.md)
-* [📐 Board Creation & Syntax](Board-Creation-&-Syntax.md)
-* [🧩 UI Components Reference](UI-Components-Reference.md)
-* [🖱️ Actions & Interactions](Actions-&-Interactions.md)
-* [🔄 Placeholders & Dynamic Content](Placeholders-&-Dynamic-Content.md)
-* [💻 Commands & Permissions](Commands-&-Permissions.md)
-* [🏗️ Architecture & Performance](Architecture-&-Performance-Guide.md)
-* [🗄️ Database & Persistence](Database-&-Persistence-Guide.md)
-* [❓ Troubleshooting & FAQ](Troubleshooting-&-FAQ.md)
+* [🏠 Home](Home)
+* [🚀 Getting Started](Getting-Started)
+* [⚙️ Configuration Guide](Configuration-Guide)
+* [📐 Board Creation & Syntax](Board-Creation-&-Syntax)
+* [🧩 UI Components Reference](UI-Components-Reference)
+* [🖱️ Actions & Interactions](Actions-&-Interactions)
+* [🔄 Placeholders & Dynamic Content](Placeholders-&-Dynamic-Content)
+* [💻 Commands & Permissions](Commands-&-Permissions)
+* [🏗️ Architecture & Performance](Architecture-&-Performance-Guide)
+* [🗄️ Database & Persistence](Database-&-Persistence-Guide)
+* [❓ Troubleshooting & FAQ](Troubleshooting-&-FAQ)
 
 ---
 **Links**

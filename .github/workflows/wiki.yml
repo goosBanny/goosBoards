@@ -25,7 +25,7 @@ jobs:
 
       - name: Sync docs to GitHub Wiki
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.WIKI_TOKEN || secrets.GITHUB_TOKEN }}
         run: |
           echo "Starting GitHub Wiki synchronization..."
           WIKI_REPO_URL="https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.wiki.git"

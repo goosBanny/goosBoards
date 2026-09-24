@@ -26,16 +26,16 @@ Explore the comprehensive guides below to learn how to install, configure, and c
 
 | Section | Description |
 | :--- | :--- |
-| [🚀 Getting Started](Getting-Started.md) | Server requirements, dependencies, installation steps, and your first board. |
-| [⚙️ Configuration Guide](Configuration-Guide.md) | Complete line-by-line documentation of `config.yml` with a reference configuration. |
-| [📐 Board Creation & Syntax](Board-Creation-&-Syntax.md) | Comprehensive specification of board YAML files, display rigs, and view groupings. |
-| [🧩 UI Components Reference](UI-Components-Reference.md) | Documentation for all layout components: text, images, animated GIFs, buttons, scroll panes, etc. |
-| [🖱️ Actions & Interactions](Actions-&-Interactions.md) | Click detection, raycasting, sound triggers, scene switches, and Vault economy protection. |
-| [🔄 Placeholders & Dynamic Content](Placeholders-&-Dynamic-Content.md) | PlaceholderAPI integration, internal tokens, update intervals, and render cache deduplication. |
-| [💻 Commands & Permissions](Commands-&-Permissions.md) | Full command reference, selection wand guide, and administrative permissions. |
-| [🏗️ Architecture & Performance](Architecture-&-Performance-Guide.md) | Deep dive into virtual entity allocation, Folia concurrency, dirty diffing, and security. |
-| [🗄️ Database & Persistence](Database-&-Persistence-Guide.md) | Setting up embedded H2 or external MySQL/MariaDB for persistent player scene state. |
-| [❓ Troubleshooting & FAQ](Troubleshooting-&-FAQ.md) | Common setup hurdles, headless Java font installation, and protocol details. |
+| [🚀 Getting Started](Getting-Started) | Server requirements, dependencies, installation steps, and your first board. |
+| [⚙️ Configuration Guide](Configuration-Guide) | Complete line-by-line documentation of `config.yml` with a reference configuration. |
+| [📐 Board Creation & Syntax](Board-Creation-&-Syntax) | Comprehensive specification of board YAML files, display rigs, and view groupings. |
+| [🧩 UI Components Reference](UI-Components-Reference) | Documentation for all layout components: text, images, animated GIFs, buttons, scroll panes, etc. |
+| [🖱️ Actions & Interactions](Actions-&-Interactions) | Click detection, raycasting, sound triggers, scene switches, and Vault economy protection. |
+| [🔄 Placeholders & Dynamic Content](Placeholders-&-Dynamic-Content) | PlaceholderAPI integration, internal tokens, update intervals, and render cache deduplication. |
+| [💻 Commands & Permissions](Commands-&-Permissions) | Full command reference, selection wand guide, and administrative permissions. |
+| [🏗️ Architecture & Performance](Architecture-&-Performance-Guide) | Deep dive into virtual entity allocation, Folia concurrency, dirty diffing, and security. |
+| [🗄️ Database & Persistence](Database-&-Persistence-Guide) | Setting up embedded H2 or external MySQL/MariaDB for persistent player scene state. |
+| [❓ Troubleshooting & FAQ](Troubleshooting-&-FAQ) | Common setup hurdles, headless Java font installation, and protocol details. |
 
 ---
 

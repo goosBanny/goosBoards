@@ -156,8 +156,8 @@ scenes:
 ```
 
 For complete documentation of every UI component and action type, see:
-* [🧩 UI Components Reference](UI-Components-Reference.md)
-* [🖱️ Actions & Interactions](Actions-&-Interactions.md)
+* [🧩 UI Components Reference](UI-Components-Reference)
+* [🖱️ Actions & Interactions](Actions-&-Interactions)
 
 ---
 
