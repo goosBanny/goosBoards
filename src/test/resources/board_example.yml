@@ -1,0 +1,473 @@
+# ==============================================================================
+# InteractiveBoard Reference Implementation - Showcase Board
+# ==============================================================================
+
+# --- GLOBAL BOARD SETTINGS ---
+settings:
+  # Enables tile-isolated Floyd-Steinberg dithering for this specific board.
+  dithering: true
+
+  # If true, resets the player's active view/scene back to default when they
+  # step outside the display's activation distance.
+  reset-on-radius-exit: true
+
+  # Controls which default scene a player sees when entering the board area.
+  # Checked from top to bottom; first matching group wins.
+  view-grouping:
+    group-staff:
+      type: individual # Each staff member gets their own contextual view
+      default-scene: staff-dashboard
+      access-conditions:
+        perm-check:
+          type: permission
+          permission: "server.staff"
+
+    group-vip:
+      type: individual
+      default-scene: main-hub
+      access-conditions:
+        perm-check:
+          type: permission
+          permission: "rank.vip"
+
+    group-default:
+      type: individual
+      default-scene: main-hub
+
+# --- PHYSICAL DISPLAY RIGS (Where the board lives in the world) ---
+displays:
+  spawn-wall:
+    world: "world"
+    # Dimensions in blocks (1 block = 128x128 pixels). 4x3 blocks = 512x384 pixels.
+    width: 4
+    height: 3
+
+    # Coordinate of the top-left block of the display
+    top-left:
+      x: 100.0
+      y: 72.0
+      z: -250.0
+
+    # Orientation in world space
+    direction: south  # Facing direction of the item frames (north, south, east, west, up, down)
+    down: down        # Vector pointing downwards along the display's Y plane
+
+    # Distances in blocks
+    distance: 32.0             # Packets sent to players within this sphere
+    interaction-distance: 16.0 # Player can click/hover up to 16 blocks away (via input raycasting)
+
+    invisible: true            # Use invisible item frames (client-side)
+    glow: false                # Use glow item frames (1.17+)
+    display-on-bedrock: true   # Enable Geyser/Floodgate translation layer
+    use-displays: true         # Use 1.19.4+ TextDisplay entities for transparent elements
+
+# ==============================================================================
+# SCENE DEFINITIONS
+# ==============================================================================
+scenes:
+
+  # ----------------------------------------------------------------------------
+  # SCENE 1: Main Server Hub & Interactive Dashboard
+  # ----------------------------------------------------------------------------
+  main-hub:
+
+    # --- ROOT BACKGROUND ---
+    canvas-background:
+      type: background
+      position: 0 0
+      size: max max             # Stretches to fill the entire 512x384 canvas
+      color: "25 25 35 255"     # RGBA (Dark slate background)
+
+    # --- CONTEXT-INDEPENDENT HEADER ---
+    # Renders once, shared across all viewers via the RenderStateCache.
+    server-logo:
+      type: image
+      position: 16 16
+      size: 48 48
+      cache-behavior: global    # Kept in global LRU cache
+      image:
+        name: "logo.png"        # Local file in plugins/InteractiveBoard/images/
+
+    header-title:
+      type: text
+      position: 72 18
+      text: "<gradient:#FFD700:#FFA500><b>MYTHIC REALMS NETWORK</b></gradient>"
+      formatting: minimessage
+      font: "Impact"
+      font-size: 24
+      outline-color: "0 0 0 255"
+      outline-stroke: 1.5
+
+    header-subtitle:
+      type: pixel_text          # Blitted using vanilla font for maximum performance
+      position: 74 44
+      text: "&7Current Realm: &aSurvival Alpha &8| &7Online: &e%server_online%"
+      color: white
+      font-scale: 1
+
+    # --- PER-PLAYER CONTEXTUAL PANEL ---
+    # Cached per resolved placeholder values, not by player UUID.
+    player-card:
+      type: background
+      position: 16 80
+      size: 160 280
+      color: "35 35 48 200"     # Semi-transparent backing panel
+      corner-radius: 8
+      outline-color: "60 60 85 255"
+      outline-width: 1
+
+      children:
+        player-head:
+          type: head_2d
+          position: 12 12
+          size: 48 48
+          skin: "%player_name%" # Dynamic PAPI expansion
+
+        welcome-text:
+          type: auto_font_size_text # Dynamically scales text down to fit boundary
+          position: 68 14
+          size: 80 20
+          text: "&f%player_name%"
+          formatting: legacy
+          bold: true
+          color: white
+
+        rank-badge:
+          type: pixel_text
+          position: 68 34
+          text: "%vault_prefix%"
+          formatting: legacy
+
+        balance-counter:
+          type: pixel_text
+          position: 12 72
+          text: "&6Coins: &f$%vault_eco_balance_formatted%"
+          font-scale: 1
+
+        ping-indicator:
+          type: pixel_text
+          position: 12 88
+          text: "&bPing: &f%player_ping%ms"
+
+    # --- INTERACTIVE NAVIGATION BUTTONS ---
+    shop-button:
+      type: button
+      position: 192 80
+      size: 140 50
+      color: "40 120 220 255"
+      corner-radius: 6
+      outline-width: 2
+      outline-color: "20 80 160 255"
+
+      # Dynamic hover states
+      on-hover-color: "60 150 255 255"
+      on-hover-outline-color: "255 255 255 255"
+
+      children:
+        button-label:
+          type: pixel_text
+          alignment: center
+          vertical-alignment: center
+          text: "&f&lSERVER SHOP"
+          shadow: true
+
+      # Interaction triggers
+      on-hover:
+        sound:
+          type: play_sound
+          sound: "minecraft:ui.button.click"
+          pitch: 1.5
+          volume: 0.5
+      on-click:
+        switch:
+          type: switch_scene
+          scene: "shop-menu"
+
+    media-button:
+      type: button
+      position: 348 80
+      size: 140 50
+      color: "180 40 80 255"
+      corner-radius: 6
+      outline-width: 2
+      outline-color: "120 20 50 255"
+      on-hover-color: "220 60 110 255"
+      on-hover-outline-color: "255 255 255 255"
+
+      children:
+        label:
+          type: pixel_text
+          alignment: center
+          vertical-alignment: center
+          text: "&f&lTUTORIALS (GIF)"
+          shadow: true
+
+      on-click:
+        switch:
+          type: switch_scene
+          scene: "media-showcase"
+
+    # --- REWARD CLAIM BUTTON (VAULT / TRANSACTION TEST) ---
+    daily-reward-btn:
+      type: button
+      position: 192 144
+      size: 296 40
+      color: "30 140 60 255"
+      corner-radius: 4
+      on-hover-color: "40 180 80 255"
+
+      conditions:
+        can-claim:
+          type: permission
+          permission: "rewards.daily.claimable"
+
+      children:
+        claim-text:
+          type: pixel_text
+          alignment: center
+          vertical-alignment: center
+          text: "&a&l[CLICK TO CLAIM DAILY $500]"
+          shadow: true
+
+      on-click:
+        # Atomic economy reward with double-spend protection
+        payout:
+          type: command
+          execute-from-console: true
+          command: "eco give %player_name% 500"
+          conditions:
+            perm-check:
+              type: permission
+              permission: "rewards.daily.claimable"
+
+        take-perm:
+          type: command
+          execute-from-console: true
+          command: "lp user %player_name% permission set rewards.daily.claimable false"
+
+        feedback:
+          type: send_message
+          message: "<prefix> &aYou claimed your daily &e$500&a!"
+          formatting: minimessage
+
+        ding:
+          type: play_sound
+          sound: "minecraft:entity.player.levelup"
+          pitch: 1.0
+
+  # ----------------------------------------------------------------------------
+  # SCENE 2: Shop Menu with ScrollPane & Purchase Validation
+  # ----------------------------------------------------------------------------
+  shop-menu:
+    background:
+      type: background
+      position: 0 0
+      size: max max
+      color: "20 20 28 255"
+
+    back-button:
+      type: button
+      position: 16 16
+      size: 80 32
+      color: "60 60 75 255"
+      on-hover-color: "90 90 110 255"
+      children:
+        label:
+          type: pixel_text
+          alignment: center
+          vertical-alignment: center
+          text: "&c&l< BACK"
+      on-click:
+        go-back:
+          type: switch_scene
+          scene: "main-hub"
+
+    title:
+      type: pixel_text
+      position: 110 24
+      text: "&e&lSHOP CATEGORY: &fPotions & Boosters"
+      font-scale: 1
+
+    # --- SCROLLABLE CONTAINER ---
+    # Hit-tests are automatically clipped to the 480x280 window.
+    store-scrollpane:
+      type: scroll_pane
+      position: 16 60
+      size: 480 300
+      scroll-inner-size: 480 600 # 600px vertical inner canvas
+      mouse-scroll: true
+      mouse-scroll-vertical: true
+      mouse-scroll-amount: 32
+      scroll-behavior: snap      # Bounces back at top/bottom limits
+
+      content:
+        # Shop Item 1
+        item-card-1:
+          type: background
+          position: 10 10
+          size: 440 64
+          color: "35 35 45 255"
+          corner-radius: 4
+
+          children:
+            icon:
+              type: image
+              position: 8 8
+              size: 48 48
+              image:
+                name: "potion_speed.png"
+
+            name:
+              type: pixel_text
+              position: 68 14
+              text: "&bSpeed Potion II (15:00)"
+
+            price:
+              type: pixel_text
+              position: 68 34
+              text: "&6Price: &e$150"
+
+            buy-btn:
+              type: button
+              position: 320 16
+              size: 100 32
+              color: "40 160 80 255"
+              on-hover-color: "60 200 100 255"
+              children:
+                lbl:
+                  type: pixel_text
+                  alignment: center
+                  vertical-alignment: center
+                  text: "&f&lPURCHASE"
+
+              on-click:
+                purchase-txn:
+                  type: command
+                  execute-from-console: true
+                  command: "give %player_name% potion{Potion:\"minecraft:strong_swiftness\"} 1"
+                  # Deducts $150 atomically via Vault before executing command
+                  price: 150.0
+
+                success-msg:
+                  type: send_message
+                  message: "<green>Successfully purchased Speed Potion II!</green>"
+                  formatting: minimessage
+
+  # ----------------------------------------------------------------------------
+  # SCENE 3: Media Showcase (GIF Video, Anti-SSRF Remote Web Image)
+  # ----------------------------------------------------------------------------
+  media-showcase:
+    background:
+      type: background
+      position: 0 0
+      size: max max
+      color: "15 15 20 255"
+
+    back-btn:
+      type: button
+      position: 16 16
+      size: 80 32
+      color: "60 60 75 255"
+      children:
+        lbl:
+          type: pixel_text
+          alignment: center
+          vertical-alignment: center
+          text: "&c&l< BACK"
+      on-click:
+        back:
+          type: switch_scene
+          scene: "main-hub"
+
+    # --- ANIMATED GIF COMPONENT ---
+    tutorial-gif:
+      type: gif
+      position: 24 64
+      size: 220 160
+      gif:
+        name: "combat_guide.gif" # Located in images/combat_guide.gif
+        reset: true              # Rewinds to frame 0 when scene is displayed
+        fast: false              # Runs at standard 10 FPS (true = 20 FPS)
+        play-once: false         # Loops indefinitely
+
+    # --- SECURE REMOTE IMAGE (ANTI-SSRF TESTED) ---
+    web-banner:
+      type: image
+      position: 268 64
+      size: 220 160
+      cache-behavior: view       # Evicted immediately on disconnect
+      image:
+        # Pre-resolved against DNS firewall; rejected if pointing to 127.0.0.1, 169.254.x.x, etc.
+        name: "https://assets.myserver.net/announcements/event-banner.png"
+        refresh: true
+        refresh-time: 300        # Re-fetches every 5 minutes
+
+    # --- TIMERS & ACTION LISTENERS ---
+    # Fires an automatic slide-switch after 60 seconds of inactivity
+    auto-return-timer:
+      type: delayed_function_timer
+      time: 60000                # Milliseconds
+      functions:
+        reset-view:
+          type: switch_scene
+          scene: "main-hub"
+
+    # External trigger endpoint: /ib trigger spawn-wall <player> force-alert
+    remote-listener:
+      type: action_listener
+      identifier: "force-alert"
+      on-trigger:
+        alert-sound:
+          type: play_sound
+          sound: "minecraft:block.bell.use"
+          volume: 1.0
+          pitch: 1.2
+        alert-msg:
+          type: send_message
+          message: "<gold><b>[BROADCAST]</b> An admin pinged your board!</gold>"
+          formatting: minimessage
+
+  # ----------------------------------------------------------------------------
+  # SCENE 4: Staff-Only Diagnostics Dashboard
+  # ----------------------------------------------------------------------------
+  staff-dashboard:
+    background:
+      type: background
+      position: 0 0
+      size: max max
+      color: "30 10 10 255"     # Dark red tint
+
+    title:
+      type: text
+      position: 16 16
+      text: "<red><b>STAFF DIAGNOSTICS & SYSTEM CONTROL</b></red>"
+      formatting: minimessage
+      font-size: 20
+
+    tps-metric:
+      type: pixel_text
+      position: 20 60
+      text: "&eServer TPS: &f%server_tps%"
+
+    ram-metric:
+      type: pixel_text
+      position: 20 80
+      text: "&eRAM Usage: &f%server_ram_used%MB / %server_ram_total%MB"
+
+    restart-warning-btn:
+      type: button
+      position: 20 120
+      size: 200 40
+      color: "180 30 30 255"
+      on-hover-color: "220 50 50 255"
+      children:
+        lbl:
+          type: pixel_text
+          alignment: center
+          vertical-alignment: center
+          text: "&f&lBROADCAST RESTART"
+      on-click:
+        warn-cmd:
+          type: command
+          execute-from-console: true
+          command: "broadcast &c[Warning] Server restart in 10 minutes!"

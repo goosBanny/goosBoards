@@ -1,0 +1,132 @@
+# ==============================================================================
+# InteractiveBoard Engine - Global Configuration
+# Target: Paper / Folia 1.20.4+ | Clients: 1.19.4+ (Protocol >= 762)
+# ==============================================================================
+config-version: 1
+
+# --- CONCURRENCY & THREAD POOLS (Folia-Safe) ---
+threading:
+  # Size of the daemon pool executing async look-vector raycasts.
+  # Formula: 0 = auto-calculate (max(2, availableProcessors / 4))
+  raycast-pool-size: 0
+
+  # Size of the ForkJoinPool handling software rasterization and color quantization.
+  # Formula: 0 = auto-calculate (max(2, availableProcessors / 2))
+  render-pool-size: 0
+
+# --- SPATIAL INDEXING (Broad-Phase Raycast Gate) ---
+spatial-index:
+  # Size of spatial buckets in blocks. Players are only raycast against boards
+  # occupying their current or adjacent spatial buckets.
+  bucket-size: 32
+
+  # Cadence (in server ticks) for refreshing the player-to-board proximity index.
+  proximity-scan-interval-ticks: 2
+
+# --- GRAPHICS, QUANTIZATION & NETWORK ---
+rendering:
+  # Global default for color dithering on map displays.
+  # Options:
+  #   TILE_ISOLATED - Clamps Floyd-Steinberg error at 128x128 boundaries (Best visual/perf balance)
+  #   NONE          - Fastest, nearest-neighbor color quantization (Best for flat/UI designs)
+  default-dithering: TILE_ISOLATED
+
+  # Network flush batching. When true, queues all dirty tiles for a board
+  # and flushes the Netty channel once per frame instead of per-tile.
+  batch-packet-flushes: true
+
+  # Debounce delay (in milliseconds) for PlaceholderAPI-driven redraws.
+  # Prevents placeholders that update every server tick (e.g., %server_ram%)
+  # from saturating the render pool.
+  placeholder-debounce-ms: 150
+
+# --- SHARED RENDER CACHE (Viewer Deduplication) ---
+render-cache:
+  # Maximum memory (in Megabytes) allocated to context-independent rendered tiles.
+  max-memory-mb: 128
+
+  # Time-to-idle (in minutes) before inactive cached tiles are evicted from RAM.
+  expire-after-access-minutes: 10
+
+# --- SECURITY, SSRF & RESOURCE BOMBS ---
+security:
+  media:
+    # Maximum allowed download size for remote images/GIFs (in bytes). Default: 8MB
+    max-file-size-bytes: 8388608
+
+    # Network timeout for fetching remote assets (in milliseconds).
+    connect-timeout-ms: 4000
+    read-timeout-ms: 6000
+
+    # Maximum redirect hops allowed when resolving an image URL.
+    max-redirects: 3
+
+    # Hard limits on decoded animated GIFs to prevent Out-Of-Memory (OOM) bombs.
+    max-gif-frames: 100
+    max-gif-resolution: 2048 # Width or height in pixels
+
+  # Anti-SSRF DNS Validator:
+  # Rejects remote image requests that resolve to private, loopback, or cloud-metadata IP addresses.
+  ssrf-firewall:
+    enabled: true
+    blocked-ranges:
+      - '127.0.0.0/8'       # Loopback IPv4
+      - '10.0.0.0/8'        # RFC1918 Class A
+      - '172.16.0.0/12'     # RFC1918 Class B
+      - '192.168.0.0/16'    # RFC1918 Class C
+      - '169.254.0.0/16'    # Link-Local / Cloud Metadata (AWS/GCP/Azure)
+      - '0.0.0.0/8'         # Current network
+      - '::1/128'           # Loopback IPv6
+      - 'fc00::/7'          # Unique Local IPv6
+      - 'fe80::/10'         # Link-Local IPv6
+
+# --- EXTERNAL APIS & FALLBACKS (Player Heads / Skins / Metadata) ---
+api:
+  skin-service:
+    # Primary API endpoint for resolving player heads/avatars.
+    # Placeholders supported: {uuid}, {username}
+    # Examples:
+    #   Mojang session: "https://sessionserver.mojang.com/session/minecraft/profile/{uuid}"
+    #   Crafatar: "https://crafatar.com/avatars/{uuid}?overlay"
+    #   Minotar: "https://minotar.net/avatar/{uuid}"
+    #   Custom / Self-hosted proxy: "https://skin.mycoolserver.net/avatar/{uuid}"
+    primary-avatar-url: "https://crafatar.com/avatars/{uuid}?overlay"
+
+    # Profile lookup API (resolves username to UUID if needed)
+    profile-url: "https://api.mojang.com/users/profiles/minecraft/{username}"
+
+    # Backup / Fallback APIs tried in order when primary encounters HTTP 429 (Too Many Requests), 5xx, or network timeouts.
+    fallback-avatar-urls:
+      - "https://minotar.net/avatar/{uuid}"
+      - "https://mc-heads.net/avatar/{uuid}"
+
+    # Rate limiting & backoff handling
+    rate-limit:
+      # Maximum requests per minute to external avatar services to avoid rate-limit bans
+      max-requests-per-minute: 120
+      # Backoff cooldown duration (in seconds) after encountering HTTP 429 before attempting the endpoint again
+      rate-limit-backoff-seconds: 60
+      # Network request timeout in milliseconds
+      timeout-ms: 4000
+
+# --- INTERACTION & ANTI-EXPLOIT ---
+interaction:
+  # Token-bucket rate limiting per player
+  rate-limiting:
+    max-clicks-per-second: 8
+    max-hover-packets-per-second: 20
+
+  # Economy Guard: Window (in milliseconds) during which duplicate transactions
+  # with the same idempotency key are rejected. Prevents click-macro dupes.
+  economy-idempotency-window-ms: 1000
+
+  # Sound played automatically when clicking any interactive element (can be overridden per object).
+  default-click-sound: "minecraft:ui.button.click"
+
+# --- DEBUG & OBSERVABILITY ---
+debug:
+  # Logs render timings, cache hit ratios, and raycast cycle metrics to the console.
+  performance-logging: false
+
+  # Highlights component bounding boxes on the board with red outlines (For UI layout testing).
+  draw-bounding-boxes: false

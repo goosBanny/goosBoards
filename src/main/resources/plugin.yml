@@ -1,0 +1,21 @@
+name: GoosBoards
+version: '${version}'
+main: me.goosbanny.goosboards.GoosBoards
+api-version: '1.20'
+folia-supported: true
+softdepend: [Vault, PlaceholderAPI, packetevents]
+authors: [goosBanny]
+
+commands:
+  goosboard:
+    description: Main administration and diagnostics command for GoosBoards
+    permission: goosboards.admin
+    aliases: [gb, goosboards, board, boards, ib, interactiveboard]
+
+permissions:
+  goosboards.admin:
+    description: Grants access to GoosBoards administrative and diagnostic commands
+    default: op
+  interactiveboard.admin:
+    description: Legacy InteractiveBoard administrative permission alias
+    default: op

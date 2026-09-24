@@ -1,0 +1,96 @@
+# ==============================================================================
+# GoosBoards - Messages & Localization Configuration
+# Supports both MiniMessage tags (<red>, <bold>, <gradient:...>) and Legacy codes (&a, &#RRGGBB)
+# ==============================================================================
+
+# Global chat prefix used across messages ({prefix} placeholder)
+prefix: "<gradient:#3B82F6:#8B5CF6><b>GoosBoards</b></gradient> <dark_gray>»</dark_gray> "
+
+# Permission & General
+no-permission: "{prefix}<red>You do not have permission to execute this command.</red>"
+unknown-command: "{prefix}<red>Unknown subcommand: <white>{sub}</white>. Use <yellow>/{label}</yellow> for available commands.</red>"
+
+# Reload Command
+reload-start: "{prefix}<yellow>Reloading configurations...</yellow>"
+reload-success: "{prefix}<green>Successfully reloaded <white>{boards}</white> board(s) in <white>{time}ms</white>.</green>"
+reload-failure: "{prefix}<red>Configuration reload failed: {error}</red>"
+reload-rollback: "{prefix}<red>Previous boards remain active with zero downtime.</red>"
+reload-rehydrated: "{prefix}<gray>Rehydrated <white>{viewers}</white> active viewer session(s).</gray>"
+
+# Debug Command
+board-not-found: "{prefix}<red>Board not found: <white>{board}</white></red>"
+debug-header: "<gradient:#F59E0B:#EF4444><b>=== GoosBoards Performance Profiler ===</b></gradient>"
+debug-board-id: "<yellow>Board ID: <white>{board}</white></yellow>"
+debug-latency: "<yellow>Render Latency (Last 100f): <white>Min: {min}ms | Avg: {avg}ms | Max: {max}ms</white></yellow>"
+debug-packet-rate: "<yellow>Outbound Packet Rate: <white>{rate} pkts/sec</white></yellow>"
+debug-cache-hit: "<yellow>Shared Render Cache Hit Ratio: <white>{ratio}%</white></yellow>"
+debug-viewers: "<yellow>Active Viewers: <white>{viewers}</white></yellow>"
+debug-frames: "<yellow>Total Frames Rendered: <white>{frames}</white></yellow>"
+debug-packets: "<yellow>Total Packets Flushed: <white>{packets}</white></yellow>"
+debug-footer: "<gradient:#F59E0B:#EF4444><b>========================================</b></gradient>"
+
+# List Command
+list-header: "<gradient:#3B82F6:#8B5CF6><b>=== Active Boards ({count}) ===</b></gradient>"
+list-item: " <gray>- <green>{board}</green> <gray>(Displays: <white>{displays}</white>, Scenes: <white>{scenes}</white>)</gray>"
+list-empty: "{prefix}<gray>No active boards currently loaded.</gray>"
+
+# Help Command
+help-header: "<gradient:#3B82F6:#8B5CF6><b>=== GoosBoards Commands ===</b></gradient>"
+help-create: "<yellow>/{label} create [name] <gray>- Interactive two-corner board creation</gray></yellow>"
+help-cancel: "<yellow>/{label} cancel <gray>- Cancel active board selection process</gray></yellow>"
+help-delete: "<yellow>/{label} delete <board> <gray>- Delete a board and its configuration file</gray></yellow>"
+help-reload: "<yellow>/{label} reload [--silent/-s] [--force/-f] <gray>- Zero-downtime staged config reload</gray></yellow>"
+help-reset: "<yellow>/{label} reset <board> <gray>- Reload and reset a specific board</gray></yellow>"
+help-teleport: "<yellow>/{label} teleport <display> <gray>- Teleport in front of a display</gray></yellow>"
+help-fonts: "<yellow>/{label} fonts <gray>- List loaded font names</gray></yellow>"
+help-name: "<yellow>/{label} name <gray>- Get board/display name under cursor</gray></yellow>"
+help-coordinates: "<yellow>/{label} coordinates <gray>- Get exact pixel (X, Y) coordinate under cursor</gray></yellow>"
+help-trigger: "<yellow>/{label} trigger <display> <player> <id> <gray>- Trigger an action listener</gray></yellow>"
+help-debug: "<yellow>/{label} debug <board> [--raw/-r] <gray>- Display real-time render latency and metrics</gray></yellow>"
+help-list: "<yellow>/{label} list [--verbose/-v] <gray>- List loaded boards and active displays</gray></yellow>"
+help-showcase: "<yellow>/{label} showcase [name] <gray>- Spawn an 8x8 test board with real URLs & interactive features</gray></yellow>"
+help-footer: "<gradient:#3B82F6:#8B5CF6><b>===========================</b></gradient>"
+
+# Interactive Board Creation & Selection
+selection-started: "{prefix}<yellow>Board creation started! <white>Right-click the first corner</white> on the wall.</yellow>"
+selection-corner1-actionbar: "<green>Corner 1 set at <white>{x}, {y}, {z}</white></green> <dark_gray>»</dark_gray> <yellow>Right-click opposite corner</yellow> <gray>(or /{label} cancel)</gray>"
+selection-corner2-actionbar: "<green>Selection: <white>{width}x{height} blocks</white> facing <white>{dir}</white></green> <dark_gray>»</dark_gray> <yellow>Run /{label} create <name></yellow> <gray>(or /{label} cancel)</gray>"
+selection-cancelled: "{prefix}<gray>Board creation process cancelled.</gray>"
+selection-cancelled-actionbar: "<red>Board creation cancelled.</red>"
+selection-not-active: "{prefix}<red>You do not have an active board selection process to cancel.</red>"
+selection-incomplete: "{prefix}<red>You must select both corners first! Run <yellow>/{label} create</yellow> to start selecting.</red>"
+selection-already-active: "{prefix}<yellow>Selection in progress. Right-click corners or run <white>/{label} cancel</white>.</yellow>"
+selection-world-mismatch: "{prefix}<red>Both corners must be located in the same world!</red>"
+selection-face-mismatch: "{prefix}<red>Both corners must be on the same wall plane/face!</red>"
+selection-player-only: "{prefix}<red>Only in-game players can use interactive board selection.</red>"
+
+# Board Management
+board-created: "{prefix}<green>Successfully created board <white>{board}</white> (<white>{width}x{height}</white> blocks, facing <white>{dir}</white>)! File saved to <white>boards/{board}.yml</white>.</green>"
+board-created-actionbar: "<green>Board <white>{board}</white> created successfully!</green>"
+board-already-exists: "{prefix}<red>A board named <white>{board}</white> already exists.</red>"
+board-create-failed: "{prefix}<red>Failed to create board file: {error}</red>"
+board-deleted: "{prefix}<green>Board <white>{board}</white> has been deleted and despawned.</green>"
+board-delete-failed: "{prefix}<red>Failed to delete board <white>{board}</white>.</red>"
+board-reset: "{prefix}<green>Board <white>{board}</white> has been reset to its default scene.</green>"
+
+# Teleportation
+teleport-success: "{prefix}<green>Teleported to display <white>{display}</white> of board <white>{board}</white>.</green>"
+display-not-found: "{prefix}<red>Display <white>{display}</white> not found across any active boards.</red>"
+
+# Fonts
+fonts-header: "<gradient:#3B82F6:#8B5CF6><b>=== Available Fonts ({count}) ===</b></gradient>"
+fonts-item: " <gray>- <white>{font}</white></gray>"
+
+# Raycast Inspection (Name & Coordinates)
+name-result: "{prefix}<yellow>Targeted Board: <white>{board}</white> <gray>(Display: <white>{display}</white>)</gray></yellow>"
+name-none: "{prefix}<gray>You are not looking at any GoosBoards display.</gray>"
+coordinates-result: "{prefix}<yellow>Display: <white>{display}</white> | Pixel: <white>X={pixel_x}, Y={pixel_y}</white> | Tile: <white>({tile_x}, {tile_y})</white></yellow>"
+coordinates-none: "{prefix}<gray>You are not looking at any GoosBoards display.</gray>"
+
+# Action Listener Triggering
+trigger-success: "{prefix}<green>Action listener <white>{identifier}</white> triggered on display <white>{display}</white> for <white>{player}</white>.</green>"
+trigger-listener-not-found: "{prefix}<red>Action listener <white>{identifier}</white> not found in current scene of display <white>{display}</white>.</red>"
+player-not-found: "{prefix}<red>Player <white>{player}</white> not found or not online.</red>"
+
+# Interaction & Economy
+transaction-failed: "<red>Transaction failed: {reason}</red>"

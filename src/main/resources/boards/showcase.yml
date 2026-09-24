@@ -1,0 +1,1168 @@
+# ==============================================================================
+# GoosBoards - 8x8 Interactive Showcase Board (1024x1024 Pixels)
+# Tests and showcases all features of GoosBoards:
+#  1. Virtual Item Frame Netty packet engine with 20 TPS dirty diffs
+#  2. Per-viewer crosshair raycasting and dynamic hover tracking
+#  3. Crisp board outline on aim (hover-glow: true, glow-mode: border)
+#  4. Dynamic button hover colors (on-hover-color, on-hover-outline-color)
+#  5. Soft bloom glow effects on buttons (hover-glow: true, hover-glow-color)
+#  6. Dynamic hover image swapping (image + hover-image)
+#  7. 2D Player Head avatars with skin outer hat layers (%player_name%)
+#  8. Placeholders: %player_name%, %player_ping%, Vault economy, PAPI
+#  9. MiniMessage gradients (<gradient:#HEX:#HEX><b>...</b></gradient>)
+# 10. Scalable pixel text with shadows (font-size, font-scale, shadow: true)
+# 11. Auto-font-size text fitting to bounds
+# 12. Interactive mouse-wheel scroll panes (scroll_pane, mouse-scroll: true)
+# 13. Multi-scene switching (Hub -> Web Gallery -> Ranks/Shop)
+# 14. Real asynchronous Anti-SSRF validated remote web images
+# 15. In-game audio triggers (ui.button.click, entity.player.levelup, etc.)
+# 16. Console commands and player message dispatch
+# ==============================================================================
+
+settings:
+  dithering: true
+  persistent: false
+  reset-on-radius-exit: true
+
+displays:
+  main:
+    world: "world"
+    width: 8
+    height: 8
+    top-left:
+      x: 0.0
+      y: 80.0
+      z: 0.0
+    direction: "south"
+    distance: 32.0
+    interaction-distance: 16.0
+    shape: "rounded"
+    corner-radius: 32
+    glow: false
+    glow-color: "red"
+    hover-glow: true
+    hover-glow-color: "aqua"
+    glow-mode: "border"
+
+scenes:
+
+  # ----------------------------------------------------------------------------
+  # SCENE 1: Interactive Dashboard Hub
+  # ----------------------------------------------------------------------------
+  default:
+
+    # 1. Main Slate Background
+    background:
+      type: background
+      position: "0 0"
+      size: "100% 100%"
+      color: "#0f172a"
+      corner-radius: 16
+
+    # 2. Header Brand Logo (Circular container with dynamic outline and hover swap!)
+    header-logo-container:
+      type: background
+      position: "32 32"
+      size: "80 80"
+      shape: "circle"
+      color: "#1e293b"
+      outline-color: "#38BDF8"
+      outline-width: 2
+      on-hover-outline-color: "#00FFCC"
+      on-hover-outline-width: 4
+      hover-glow: true
+      hover-glow-color: "#38BDF8"
+
+      children:
+        header-logo:
+          type: image
+          position: "8 8"
+          size: "64 64"
+          cache-behavior: global
+          image: "https://minotar.net/avatar/MHF_Chest/100.png"
+          hover-image: "https://minotar.net/avatar/MHF_Apple/100.png"
+
+    # 3. Header Title with MiniMessage Gradient
+    header-title:
+      type: text
+      position: "128 32"
+      size: "860 48"
+      alignment: left
+      text: "<gradient:#38BDF8:#818CF8><b>GOOSBOARDS 8X8 SHOWCASE</b></gradient>"
+      font: "SansSerif"
+      font-size: 34
+      outline-color: "#000000"
+      outline-stroke: 1.5
+
+    # 4. Header Subtitle (Large, crisp pixel text)
+    header-subtitle:
+      type: pixel_text
+      position: "130 84"
+      text: "&7Real URLs, 20 FPS GIF, Circular Masking &8| &a1024x1024 px (8x8 tiles)"
+      color: "#94a3b8"
+      font-size: 20
+
+    # 5. Left Panel: Player Card & Live Interactive Triggers
+    player-card:
+      type: background
+      position: "32 140"
+      size: "464 430"
+      color: "#1e293b"
+      corner-radius: 6
+      outline-color: "#475569"
+      outline-width: 1
+
+      children:
+        avatar-circle:
+          type: background
+          position: "24 24"
+          size: "96 96"
+          shape: "circle"
+          color: "#0f172a"
+          outline-color: "#F59E0B"
+          outline-width: 2
+          on-hover-outline-color: "#FDE047"
+          on-hover-outline-width: 3
+
+          children:
+            avatar:
+              type: head_2d
+              position: "8 8"
+              size: "80 80"
+              skin: "%player_name%"
+              fallback: "steve"
+
+        player-name:
+          type: auto_font_size_text
+          position: "140 32"
+          size: "300 40"
+          text: "<gradient:#FBBF24:#F59E0B><b>%player_name%</b></gradient>"
+
+        stats-label:
+          type: pixel_text
+          position: "140 80"
+          font-size: 20
+          text: "&eOnline &8| &bPing: &f%player_ping%ms"
+
+        card-divider:
+          type: background
+          position: "24 136"
+          size: "416 2"
+          color: "#334155"
+
+        card-desc:
+          type: text
+          position: "24 148"
+          size: "416 65"
+          text: "<gray>Real-time virtual item frame map pipeline\npowered by PacketEvents.</gray>"
+          font-size: 18
+
+        alert-button:
+          type: button
+          position: "24 222"
+          size: "416 58"
+          color: "#2563EB"
+          corner-radius: 4
+          outline-color: "#1D4ED8"
+          outline-width: 2
+          on-hover-color: "#3B82F6"
+          on-hover-outline-color: "#FFFFFF"
+          hover-glow: true
+          hover-glow-color: "#60A5FA"
+
+          children:
+            btn-label:
+              type: pixel_text
+              position: "0 0"
+              size: "100% 100%"
+              alignment: center
+              vertical-alignment: center
+              font-size: 22
+              shadow: true
+              text: "&f&lTEST SOUND & ALERT"
+
+          on-hover:
+            hover-snd:
+              type: play_sound
+              sound: "ui.button.click"
+              volume: 0.5
+              pitch: 1.2
+
+          on-click:
+            click-snd:
+              type: play_sound
+              sound: "entity.player.levelup"
+              volume: 1.0
+              pitch: 1.0
+            alert-msg:
+              type: send_message
+              formatting: minimessage
+              message: "<gradient:#10B981:#06B6D4><b>[GoosBoards]</b> Interactive button clicked by %player_name%!</gradient>"
+
+        cmd-button:
+          type: button
+          position: "24 290"
+          size: "416 58"
+          color: "#059669"
+          corner-radius: 4
+          outline-color: "#047857"
+          outline-width: 2
+          on-hover-color: "#10B981"
+          on-hover-outline-color: "#FFFFFF"
+          hover-glow: true
+          hover-glow-color: "#34D399"
+
+          children:
+            btn-lbl:
+              type: pixel_text
+              position: "0 0"
+              size: "100% 100%"
+              alignment: center
+              vertical-alignment: center
+              font-size: 22
+              shadow: true
+              text: "&f&lRUN COMMAND (SAY)"
+
+          on-click:
+            say-cmd:
+              type: command
+              execute-from-console: true
+              command: "say GoosBoards 8x8 showcase running for %player_name%!"
+            ding:
+              type: play_sound
+              sound: "entity.experience_orb.pickup"
+
+        hover-swap-button:
+          type: button
+          position: "24 358"
+          size: "416 58"
+          color: "#7C3AED"
+          corner-radius: 4
+          outline-color: "#6D28D9"
+          outline-width: 2
+          on-hover-color: "#8B5CF6"
+          on-hover-outline-color: "#FDE047"
+          hover-glow: true
+          hover-glow-color: "#A78BFA"
+          image: "https://minotar.net/avatar/MHF_Chest/100.png"
+          hover-image: "https://minotar.net/avatar/MHF_Apple/100.png"
+
+          children:
+            swap-lbl:
+              type: pixel_text
+              position: "0 0"
+              size: "100% 100%"
+              alignment: center
+              vertical-alignment: center
+              font-size: 20
+              shadow: true
+              text: "&e&lHOVER ME: &f&lSWAP IMAGE!"
+
+          on-hover:
+            swap-snd:
+              type: play_sound
+              sound: "ui.button.click"
+              volume: 0.6
+              pitch: 1.6
+
+    # 6. Right Panel: ScrollPane Showcase
+    scroll-panel:
+      type: background
+      position: "528 140"
+      size: "464 430"
+      color: "#1e293b"
+      corner-radius: 6
+      outline-color: "#475569"
+      outline-width: 1
+
+      children:
+        scroll-title:
+          type: pixel_text
+          position: "24 16"
+          font-size: 22
+          shadow: true
+          text: "&e&lSCROLLABLE CONTAINER"
+
+        scroll-sub:
+          type: pixel_text
+          position: "24 44"
+          font-size: 18
+          text: "&7Mouse scroll wheel or view cards"
+
+        scroll-container:
+          type: scroll_pane
+          position: "20 72"
+          size: "424 345"
+          scroll-inner-size: "424 640"
+          mouse-scroll: true
+          mouse-scroll-vertical: true
+          mouse-scroll-amount: 40
+          scroll-behavior: snap
+
+          content:
+            item-1:
+              type: background
+              position: "0 0"
+              size: "420 90"
+              color: "#334155"
+              corner-radius: 4
+              children:
+                title:
+                  type: pixel_text
+                  position: "16 16"
+                  font-size: 20
+                  shadow: true
+                  text: "&aFeature 1: Zero-Copy Netty"
+                desc:
+                  type: pixel_text
+                  position: "16 48"
+                  font-size: 16
+                  text: "&7Direct pooled channel memory buffers"
+
+            item-2:
+              type: background
+              position: "0 105"
+              size: "420 90"
+              color: "#334155"
+              corner-radius: 4
+              children:
+                title:
+                  type: pixel_text
+                  position: "16 16"
+                  font-size: 20
+                  shadow: true
+                  text: "&bFeature 2: Dirty Diffs"
+                desc:
+                  type: pixel_text
+                  position: "16 48"
+                  font-size: 16
+                  text: "&7Sub-rectangle delta tile compression"
+
+            item-3:
+              type: background
+              position: "0 210"
+              size: "420 90"
+              color: "#334155"
+              corner-radius: 4
+              children:
+                title:
+                  type: pixel_text
+                  position: "16 16"
+                  font-size: 20
+                  shadow: true
+                  text: "&eFeature 3: Folia Raycasting"
+                desc:
+                  type: pixel_text
+                  position: "16 48"
+                  font-size: 16
+                  text: "&7Per-viewer crosshair look tracking"
+
+            item-4:
+              type: background
+              position: "0 315"
+              size: "420 90"
+              color: "#334155"
+              corner-radius: 4
+              children:
+                title:
+                  type: pixel_text
+                  position: "16 16"
+                  font-size: 20
+                  shadow: true
+                  text: "&dFeature 4: Hover Reactions"
+                desc:
+                  type: pixel_text
+                  position: "16 48"
+                  font-size: 16
+                  text: "&7Glow blooms, color shifts, image swap"
+
+            item-5:
+              type: background
+              position: "0 420"
+              size: "420 90"
+              color: "#334155"
+              corner-radius: 4
+              children:
+                title:
+                  type: pixel_text
+                  position: "16 16"
+                  font-size: 20
+                  shadow: true
+                  text: "&cFeature 5: Anti-SSRF Security"
+                desc:
+                  type: pixel_text
+                  position: "16 48"
+                  font-size: 16
+                  text: "&7Hardened DNS & IP private firewalls"
+
+            item-6:
+              type: background
+              position: "0 525"
+              size: "420 90"
+              color: "#334155"
+              corner-radius: 4
+              children:
+                title:
+                  type: pixel_text
+                  position: "16 16"
+                  font-size: 20
+                  shadow: true
+                  text: "&6Feature 6: Multi-Scene Transitions"
+                desc:
+                  type: pixel_text
+                  position: "16 48"
+                  font-size: 16
+                  text: "&7Seamless page and dashboard switching"
+
+    # 7. Bottom Navigation Bar: Scene Transitions
+    nav-panel:
+      type: background
+      position: "32 585"
+      size: "960 395"
+      color: "#1e293b"
+      corner-radius: 6
+      outline-color: "#475569"
+      outline-width: 1
+
+      children:
+        gallery-card:
+          type: background
+          position: "20 20"
+          size: "445 355"
+          color: "#0f172a"
+          corner-radius: 4
+
+          children:
+            nav-title:
+              type: text
+              position: "24 20"
+              size: "397 54"
+              alignment: left
+              text: "<gradient:#F43F5E:#FB7185><b>WEB IMAGE GALLERY\n& SKINS</b></gradient>"
+              font-size: 22
+
+            nav-desc:
+              type: text
+              position: "24 80"
+              size: "397 105"
+              alignment: left
+              text: "<gray>Test real asynchronous remote web images\nloaded securely with anti-SSRF filters from\nMinotar and external web hosts.</gray>"
+              font-size: 16
+
+            switch-btn:
+              type: button
+              position: "24 200"
+              size: "397 125"
+              color: "#E11D48"
+              corner-radius: 6
+              outline-color: "#BE123C"
+              outline-width: 2
+              on-hover-color: "#F43F5E"
+              on-hover-outline-color: "#FFFFFF"
+              hover-glow: true
+              hover-glow-color: "#FB7185"
+
+              children:
+                btn-lbl:
+                  type: pixel_text
+                  position: "0 0"
+                  size: "100% 100%"
+                  alignment: center
+                  vertical-alignment: center
+                  font-size: 24
+                  shadow: true
+                  text: "&f&lVIEW GALLERY (SCENE 2) &a&l»"
+
+              on-hover:
+                hover-snd:
+                  type: play_sound
+                  sound: "ui.button.click"
+                  pitch: 1.5
+
+              on-click:
+                switch:
+                  type: switch_scene
+                  scene: "gallery"
+                ding:
+                  type: play_sound
+                  sound: "entity.player.levelup"
+                  pitch: 1.5
+
+        shop-card:
+          type: background
+          position: "495 20"
+          size: "445 355"
+          color: "#0f172a"
+          corner-radius: 4
+
+          children:
+            shop-title:
+              type: text
+              position: "24 20"
+              size: "397 54"
+              alignment: left
+              text: "<gradient:#38BDF8:#10B981><b>INTERACTIVE RANKS\n/ SHOP</b></gradient>"
+              font-size: 22
+
+            shop-desc:
+              type: text
+              position: "24 80"
+              size: "397 105"
+              alignment: left
+              text: "<gray>Interactive shop banner with item icons,\nrank purchases, hover outlines, and direct\nclick actions.</gray>"
+              font-size: 16
+
+            shop-btn:
+              type: button
+              position: "24 200"
+              size: "397 125"
+              color: "#0284C7"
+              corner-radius: 6
+              outline-color: "#0369A1"
+              outline-width: 2
+              on-hover-color: "#0EA5E9"
+              on-hover-outline-color: "#FFFFFF"
+              hover-glow: true
+              hover-glow-color: "#38BDF8"
+
+              children:
+                btn-lbl:
+                  type: pixel_text
+                  position: "0 0"
+                  size: "100% 100%"
+                  alignment: center
+                  vertical-alignment: center
+                  font-size: 24
+                  shadow: true
+                  text: "&f&lOPEN RANKS (SCENE 3) &e&l»"
+
+              on-hover:
+                hover-snd:
+                  type: play_sound
+                  sound: "ui.button.click"
+                  pitch: 1.5
+
+              on-click:
+                switch:
+                  type: switch_scene
+                  scene: "ranks"
+                ding:
+                  type: play_sound
+                  sound: "entity.player.levelup"
+                  pitch: 1.5
+
+  # ----------------------------------------------------------------------------
+  # SCENE 2: Real Remote Web Images & Security
+  # ----------------------------------------------------------------------------
+  gallery:
+
+    # 1. Dark Plum Background
+    background:
+      type: background
+      position: "0 0"
+      size: "100% 100%"
+      color: "#0b0f19"
+      corner-radius: 16
+
+    # 2. Back Navigation Button
+    back-btn:
+      type: button
+      position: "32 32"
+      size: "240 60"
+      color: "#334155"
+      corner-radius: 4
+      outline-color: "#475569"
+      outline-width: 2
+      on-hover-color: "#475569"
+      on-hover-outline-color: "#FFFFFF"
+      hover-glow: true
+      hover-glow-color: "#94A3B8"
+
+      children:
+        lbl:
+          type: pixel_text
+          alignment: center
+          vertical-alignment: center
+          font-size: 22
+          shadow: true
+          text: "&c&l« BACK TO HUB"
+
+      on-click:
+        back:
+          type: switch_scene
+          scene: "default"
+        snd:
+          type: play_sound
+          sound: "ui.button.click"
+
+    # 3. Gallery Title
+    gallery-title:
+      type: text
+      position: "300 36"
+      size: "680 48"
+      alignment: left
+      text: "<gradient:#38BDF8:#F43F5E><b>REMOTE WEB IMAGE SHOWCASE</b></gradient>"
+      font-size: 32
+      outline-color: "#000000"
+      outline-stroke: 1.5
+
+    # 4. Image Card 1: Steve Avatar (Minotar)
+    card-steve:
+      type: background
+      position: "32 115"
+      size: "295 460"
+      color: "#1e293b"
+      corner-radius: 6
+      outline-color: "#334155"
+      outline-width: 1
+
+      children:
+        img:
+          type: image
+          position: "24 24"
+          size: "247 247"
+          image: "https://minotar.net/avatar/MHF_Steve/100.png"
+
+        title:
+          type: pixel_text
+          position: "24 290"
+          font-size: 22
+          shadow: true
+          text: "&aSteve Avatar"
+
+        url-desc:
+          type: pixel_text
+          position: "24 330"
+          font-size: 18
+          text: "&7minotar.net"
+
+        status:
+          type: pixel_text
+          position: "24 370"
+          font-size: 18
+          text: "&bStatus: 200 OK"
+
+    # 5. Image Card 2: Alex Avatar (Minotar)
+    card-alex:
+      type: background
+      position: "364 115"
+      size: "295 460"
+      color: "#1e293b"
+      corner-radius: 6
+      outline-color: "#334155"
+      outline-width: 1
+
+      children:
+        img:
+          type: image
+          position: "24 24"
+          size: "247 247"
+          image: "https://minotar.net/avatar/MHF_Alex/100.png"
+
+        title:
+          type: pixel_text
+          position: "24 290"
+          font-size: 22
+          shadow: true
+          text: "&dAlex Avatar"
+
+        url-desc:
+          type: pixel_text
+          position: "24 330"
+          font-size: 18
+          text: "&7minotar.net"
+
+        status:
+          type: pixel_text
+          position: "24 370"
+          font-size: 18
+          text: "&bStatus: 200 OK"
+
+    # 6. Card 3: 20 FPS Animated Remote GIF with Outline & Decompression Protection
+    card-gif:
+      type: background
+      position: "696 115"
+      size: "295 460"
+      color: "#1e293b"
+      corner-radius: 6
+      outline-color: "#334155"
+      outline-width: 1
+      on-hover-outline-color: "#F43F5E"
+      on-hover-outline-width: 3
+
+      children:
+        anim-gif:
+          type: gif
+          position: "24 24"
+          size: "247 247"
+          # Direct remote animated GIF tested with anti-SSRF firewall
+          image: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExM3Z2NmV4M3V4bjM2OHFhZ3RnbzY4dHVwbDJpdnAwcTVuOHRnbG00biZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3oEjI6SIIHBdRxXI40/giphy.gif"
+          loop: true
+          fps: 20.0
+          outline-color: "#E11D48"
+          outline-width: 2
+          on-hover-outline-color: "#FB7185"
+          on-hover-outline-width: 3
+
+        title:
+          type: pixel_text
+          position: "24 290"
+          font-size: 22
+          shadow: true
+          text: "&d20 FPS Animated GIF"
+
+        url-desc:
+          type: pixel_text
+          position: "24 330"
+          font-size: 18
+          text: "&7Remote Giphy Stream"
+
+        status:
+          type: pixel_text
+          position: "24 370"
+          font-size: 18
+          text: "&bStatus: 20 FPS Stream"
+
+    # 7. Bottom Action & Security Box
+    footer-panel:
+      type: background
+      position: "32 600"
+      size: "960 380"
+      color: "#1e293b"
+      corner-radius: 6
+      outline-color: "#475569"
+      outline-width: 1
+
+      children:
+        info-text:
+          type: text
+          position: "32 28"
+          size: "896 40"
+          alignment: left
+          text: "<gradient:#FBBF24:#34D399><b>Anti-SSRF & DNS Security Active</b></gradient>"
+          font-size: 26
+
+        desc-text:
+          type: text
+          position: "32 76"
+          size: "896 90"
+          text: "<gray>All remote images are pre-resolved against private IP firewalls and asynchronously streamed directly into memory before palette quantization.</gray>"
+          font-size: 18
+
+        return-btn:
+          type: button
+          position: "32 195"
+          size: "896 140"
+          color: "#10B981"
+          corner-radius: 6
+          outline-color: "#059669"
+          outline-width: 2
+          on-hover-color: "#059669"
+          on-hover-outline-color: "#FFFFFF"
+          hover-glow: true
+          hover-glow-color: "#34D399"
+
+          children:
+            btn-lbl:
+              type: pixel_text
+              position: "0 0"
+              size: "100% 100%"
+              alignment: center
+              vertical-alignment: center
+              font-size: 26
+              shadow: true
+              text: "&f&l« RETURN TO MAIN SHOWCASE HUB"
+
+          on-click:
+            switch:
+              type: switch_scene
+              scene: "default"
+            snd:
+              type: play_sound
+              sound: "ui.button.click"
+
+  # ----------------------------------------------------------------------------
+  # SCENE 3: Interactive Ranks / Shop (Matching User's Screenshots!)
+  # ----------------------------------------------------------------------------
+  ranks:
+
+    # 1. Dark Background
+    background:
+      type: background
+      position: "0 0"
+      size: "100% 100%"
+      color: "#0b0f19"
+      corner-radius: 16
+
+    # 2. Back Navigation Button
+    back-btn:
+      type: button
+      position: "32 32"
+      size: "240 60"
+      color: "#334155"
+      corner-radius: 4
+      outline-color: "#475569"
+      outline-width: 2
+      on-hover-color: "#475569"
+      on-hover-outline-color: "#FFFFFF"
+      hover-glow: true
+      hover-glow-color: "#94A3B8"
+
+      children:
+        lbl:
+          type: pixel_text
+          position: "0 0"
+          size: "100% 100%"
+          alignment: center
+          vertical-alignment: center
+          font-size: 22
+          shadow: true
+          text: "&c&l« BACK TO HUB"
+
+      on-click:
+        back:
+          type: switch_scene
+          scene: "default"
+        snd:
+          type: play_sound
+          sound: "ui.button.click"
+
+    # 3. Banner Title
+    ranks-title:
+      type: text
+      position: "300 36"
+      size: "680 48"
+      alignment: left
+      text: "<gradient:#38BDF8:#FBBF24><b>SERVER RANKS & STORE</b></gradient>"
+      font-size: 32
+      outline-color: "#000000"
+      outline-stroke: 1.5
+
+    # 4. User's Exact Banner from Screenshot!
+    # Dark banner with apple, bold GET RANKS, diamond helmet, [CLICK ME], and white outline
+    get-ranks-banner:
+      type: background
+      position: "32 110"
+      size: "960 270"
+      color: "#111827"
+      corner-radius: 6
+      outline-color: "#FFFFFF"
+      outline-width: 2
+      on-hover-outline-color: "#FACC15"
+      hover-glow: true
+      hover-glow-color: "#FFFFFF"
+
+      children:
+        apple-icon:
+          type: image
+          position: "60 50"
+          size: "90 90"
+          image: "https://minotar.net/avatar/MHF_Apple/100.png"
+
+        banner-text:
+          type: text
+          position: "160 50"
+          size: "640 60"
+          alignment: center
+          text: "<white><b>GET RANKS</b></white>"
+          font-size: 48
+          outline-color: "#000000"
+          outline-stroke: 2.0
+
+        helmet-icon:
+          type: image
+          position: "810 50"
+          size: "90 90"
+          image: "https://minotar.net/avatar/MHF_Chest/100.png"
+
+        click-me-btn:
+          type: button
+          position: "280 145"
+          size: "400 65"
+          color: "#1F2937"
+          corner-radius: 4
+          outline-color: "#374151"
+          outline-width: 1
+          on-hover-color: "#374151"
+          on-hover-outline-color: "#FFFFFF"
+          hover-glow: true
+          hover-glow-color: "#FFFFFF"
+
+          children:
+            btn-lbl:
+              type: pixel_text
+              position: "0 0"
+              size: "100% 100%"
+              alignment: center
+              vertical-alignment: center
+              font-size: 26
+              shadow: true
+              text: "&f&l[CLICK ME]"
+
+          on-hover:
+            h-snd:
+              type: play_sound
+              sound: "ui.button.click"
+              volume: 0.5
+              pitch: 1.3
+
+          on-click:
+            c-snd:
+              type: play_sound
+              sound: "entity.player.levelup"
+              volume: 1.0
+              pitch: 1.2
+            store-msg:
+              type: send_message
+              formatting: minimessage
+              message: "<gradient:#FACC15:#F59E0B><b>[Ranks]</b> Check out available ranks below or visit store.example.com!</gradient>"
+
+    # 5. Interactive Rank Tiers (VIP, MVP, ELITE)
+    rank-vip:
+      type: button
+      position: "32 405"
+      size: "295 440"
+      color: "#1E3A8A"
+      corner-radius: 6
+      outline-color: "#1D4ED8"
+      outline-width: 2
+      on-hover-color: "#2563EB"
+      on-hover-outline-color: "#60A5FA"
+      hover-glow: true
+      hover-glow-color: "#3B82F6"
+
+      children:
+        r-title:
+          type: pixel_text
+          position: "24 24"
+          font-size: 26
+          shadow: true
+          text: "&b&lVIP RANK"
+
+        r-price:
+          type: pixel_text
+          position: "24 64"
+          font-size: 22
+          shadow: true
+          text: "&a&l$4.99 &7/ month"
+
+        r-desc1:
+          type: pixel_text
+          position: "24 120"
+          font-size: 18
+          text: "&f• /fly in lobbies"
+
+        r-desc2:
+          type: pixel_text
+          position: "24 160"
+          font-size: 18
+          text: "&f• 3 SetHomes"
+
+        r-desc3:
+          type: pixel_text
+          position: "24 200"
+          font-size: 18
+          text: "&f• Colored chat"
+
+        buy-box:
+          type: background
+          position: "20 340"
+          size: "255 65"
+          color: "#3B82F6"
+          corner-radius: 4
+          children:
+            buy-lbl:
+              type: pixel_text
+              position: "0 0"
+              size: "100% 100%"
+              alignment: center
+              vertical-alignment: center
+              font-size: 22
+              shadow: true
+              text: "&f&lSELECT VIP"
+
+      on-click:
+        snd:
+          type: play_sound
+          sound: "entity.experience_orb.pickup"
+        msg:
+          type: send_message
+          formatting: minimessage
+          message: "<aqua><b>[Store]</b> You selected <b>VIP Rank</b>! Run /buy vip in chat.</aqua>"
+
+    rank-mvp:
+      type: button
+      position: "364 405"
+      size: "295 440"
+      color: "#064E3B"
+      corner-radius: 6
+      outline-color: "#047857"
+      outline-width: 2
+      on-hover-color: "#059669"
+      on-hover-outline-color: "#34D399"
+      hover-glow: true
+      hover-glow-color: "#10B981"
+
+      children:
+        r-title:
+          type: pixel_text
+          position: "24 24"
+          font-size: 26
+          shadow: true
+          text: "&a&lMVP RANK"
+
+        r-price:
+          type: pixel_text
+          position: "24 64"
+          font-size: 22
+          shadow: true
+          text: "&a&l$9.99 &7/ month"
+
+        r-desc1:
+          type: pixel_text
+          position: "24 120"
+          font-size: 18
+          text: "&f• All VIP perks"
+
+        r-desc2:
+          type: pixel_text
+          position: "24 160"
+          font-size: 18
+          text: "&f• Auto-sell chest"
+
+        r-desc3:
+          type: pixel_text
+          position: "24 200"
+          font-size: 18
+          text: "&f• 7 SetHomes"
+
+        buy-box:
+          type: background
+          position: "20 340"
+          size: "255 65"
+          color: "#10B981"
+          corner-radius: 4
+          children:
+            buy-lbl:
+              type: pixel_text
+              position: "0 0"
+              size: "100% 100%"
+              alignment: center
+              vertical-alignment: center
+              font-size: 22
+              shadow: true
+              text: "&f&lSELECT MVP"
+
+      on-click:
+        snd:
+          type: play_sound
+          sound: "entity.experience_orb.pickup"
+        msg:
+          type: send_message
+          formatting: minimessage
+          message: "<green><b>[Store]</b> You selected <b>MVP Rank</b>! Run /buy mvp in chat.</green>"
+
+    rank-elite:
+      type: button
+      position: "696 405"
+      size: "295 440"
+      color: "#78350F"
+      corner-radius: 6
+      outline-color: "#B45309"
+      outline-width: 2
+      on-hover-color: "#D97706"
+      on-hover-outline-color: "#FCD34D"
+      hover-glow: true
+      hover-glow-color: "#F59E0B"
+
+      children:
+        r-title:
+          type: pixel_text
+          position: "24 24"
+          font-size: 26
+          shadow: true
+          text: "&6&lELITE RANK"
+
+        r-price:
+          type: pixel_text
+          position: "24 64"
+          font-size: 22
+          shadow: true
+          text: "&a&l$19.99 &7/ month"
+
+        r-desc1:
+          type: pixel_text
+          position: "24 120"
+          font-size: 18
+          text: "&f• All MVP perks"
+
+        r-desc2:
+          type: pixel_text
+          position: "24 160"
+          font-size: 18
+          text: "&f• Custom prefix"
+
+        r-desc3:
+          type: pixel_text
+          position: "24 200"
+          font-size: 18
+          text: "&f• Unlimited homes"
+
+        buy-box:
+          type: background
+          position: "20 340"
+          size: "255 65"
+          color: "#F59E0B"
+          corner-radius: 4
+          children:
+            buy-lbl:
+              type: pixel_text
+              position: "0 0"
+              size: "100% 100%"
+              alignment: center
+              vertical-alignment: center
+              font-size: 22
+              shadow: true
+              text: "&f&lSELECT ELITE"
+
+      on-click:
+        snd:
+          type: play_sound
+          sound: "entity.player.levelup"
+        msg:
+          type: send_message
+          formatting: minimessage
+          message: "<gold><b>[Store]</b> You selected <b>ELITE Rank</b>! Run /buy elite in chat.</gold>"
+
+    # 6. Return Button at Bottom
+    return-btn:
+      type: button
+      position: "32 870"
+      size: "960 90"
+      color: "#10B981"
+      corner-radius: 6
+      outline-color: "#059669"
+      outline-width: 2
+      on-hover-color: "#059669"
+      on-hover-outline-color: "#FFFFFF"
+      hover-glow: true
+      hover-glow-color: "#34D399"
+
+      children:
+        btn-lbl:
+          type: pixel_text
+          position: "0 0"
+          size: "100% 100%"
+          alignment: center
+          vertical-alignment: center
+          font-size: 26
+          shadow: true
+          text: "&f&l« RETURN TO MAIN SHOWCASE HUB"
+
+      on-click:
+        switch:
+          type: switch_scene
+          scene: "default"
+        snd:
+          type: play_sound
+          sound: "ui.button.click"
