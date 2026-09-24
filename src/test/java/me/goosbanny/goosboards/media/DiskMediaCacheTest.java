@@ -85,8 +85,9 @@ class DiskMediaCacheTest {
 
     @Test
     @DisplayName("Evicts oldest entries (LRU) when max cached skins limit is exceeded")
-    void testLruEviction() {
-        DiskMediaCache.configureLimits(3, 3, 14);
+    void testLruEviction() throws Exception {
+        DiskMediaCache.awaitPrune();
+        DiskMediaCache.configureLimits(100, 100, 14); // high limit during population
 
         DiskMediaCache.saveSkin("player1", new byte[]{1});
         DiskMediaCache.saveSkin("player2", new byte[]{2});
@@ -97,18 +98,14 @@ class DiskMediaCacheTest {
         long now = System.currentTimeMillis();
         File skinsDir = new File(tempDir.toFile(), "cache/skins");
 
-        // Set timestamps deterministically:
-        // player2: oldest (now - 50000ms)
-        // player3: second oldest (now - 40000ms)
-        // player4: middle (now - 30000ms)
-        // player1: accessed recently (now - 10000ms)
-        // player5: newest (now)
-        new File(skinsDir, "player2.png").setLastModified(now - 50000);
-        new File(skinsDir, "player3.png").setLastModified(now - 40000);
-        new File(skinsDir, "player4.png").setLastModified(now - 30000);
-        new File(skinsDir, "player1.png").setLastModified(now - 10000);
-        new File(skinsDir, "player5.png").setLastModified(now);
+        // Use NIO Files.setLastModifiedTime for reliable cross-platform timestamp modification
+        java.nio.file.Files.setLastModifiedTime(new File(skinsDir, "player2.png").toPath(), java.nio.file.attribute.FileTime.fromMillis(now - 50000));
+        java.nio.file.Files.setLastModifiedTime(new File(skinsDir, "player3.png").toPath(), java.nio.file.attribute.FileTime.fromMillis(now - 40000));
+        java.nio.file.Files.setLastModifiedTime(new File(skinsDir, "player4.png").toPath(), java.nio.file.attribute.FileTime.fromMillis(now - 30000));
+        java.nio.file.Files.setLastModifiedTime(new File(skinsDir, "player1.png").toPath(), java.nio.file.attribute.FileTime.fromMillis(now - 10000));
+        java.nio.file.Files.setLastModifiedTime(new File(skinsDir, "player5.png").toPath(), java.nio.file.attribute.FileTime.fromMillis(now));
 
+        DiskMediaCache.configureLimits(3, 3, 14);
         DiskMediaCache.pruneCache();
 
         assertTrue(DiskMediaCache.getCachedSkinsCount() <= 3, "Cache count must be pruned to maxSkins");
@@ -120,7 +117,8 @@ class DiskMediaCacheTest {
 
     @Test
     @DisplayName("Evicts entries older than retention days")
-    void testRetentionAgeEviction() {
+    void testRetentionAgeEviction() throws Exception {
+        DiskMediaCache.awaitPrune();
         DiskMediaCache.configureLimits(100, 100, 1); // 1 day retention
         DiskMediaCache.saveSkin("old_player", new byte[]{99});
 
@@ -128,7 +126,7 @@ class DiskMediaCacheTest {
         File skinsDir = new File(tempDir.toFile(), "cache/skins");
         File oldFile = new File(skinsDir, "old_player.png");
         assertTrue(oldFile.exists());
-        oldFile.setLastModified(System.currentTimeMillis() - (3L * 24L * 60L * 60L * 1000L));
+        java.nio.file.Files.setLastModifiedTime(oldFile.toPath(), java.nio.file.attribute.FileTime.fromMillis(System.currentTimeMillis() - (3L * 24L * 60L * 60L * 1000L)));
 
         DiskMediaCache.pruneCache();
 

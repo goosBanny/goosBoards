@@ -77,9 +77,16 @@ public final class DiskMediaCache {
         }
 
         configureLimits(maxSkinsLimit, maxImagesLimit, retentionDaysLimit);
+        writeCounter.set(0);
         initialized = true;
 
         pruneCacheAsync();
+    }
+
+    public static void awaitPrune() {
+        try {
+            PRUNE_EXECUTOR.submit(() -> {}).get(5, java.util.concurrent.TimeUnit.SECONDS);
+        } catch (Exception ignored) {}
     }
 
     public static void configureLimits(int maxSkinsLimit, int maxImagesLimit, int retentionDaysLimit) {
