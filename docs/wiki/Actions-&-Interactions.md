@@ -57,18 +57,32 @@ sample-button:
 You can chain multiple actions under an event trigger. Each action has a unique key and a `type`:
 
 ### 1. `command`
-Executes a Minecraft command from the player or the server console.
+Executes one or more Minecraft commands from the player or the server console.
+
+A command action can specify either a **single command** or a **list of commands** to perform multiple actions in sequence:
 
 ```yaml
+# Single command example:
 buy-diamonds:
   type: command
   command: "give %player_name% diamond 5"
   execute-from-console: true   # true = console, false = player runs command
   price: 50.0                  # Optional: charges $50 via Vault
+
+# Multiple commands list example (one action runs many commands!):
+rank-bundle:
+  type: command
+  price: 100.0                 # Charges $100 via Vault before executing
+  execute-from-console: true
+  commands:
+    - "lp user %player_name% parent add vip"
+    - "give %player_name% emerald 10"
+    - "say %player_name% has upgraded to VIP Rank!"
 ```
 
+* **Single or List Format**: Supports `command: "..."`, `command: [...]`, or `commands: [...]`.
 * **Placeholder Support**: Supports `%player_name%` and any PlaceholderAPI token.
-* **Anti-Injection Protection**: Newline (`\n`) and carriage return (`\r`) characters are automatically stripped from command strings to prevent malicious command chaining.
+* **Anti-Injection Protection**: Newline (`\n`) and carriage return (`\r`) characters are automatically stripped from each command string to prevent malicious command chaining.
 
 ---
 
@@ -99,13 +113,22 @@ chime-sound:
 ---
 
 ### 4. `send_message`
-Sends a formatted chat message to the interacting player.
+Sends formatted chat messages to the interacting player. Supports either a single message or a list of messages:
 
 ```yaml
+# Single message:
 greeting-msg:
   type: send_message
   message: "<green>Welcome back, <gold>%player_name%</gold>!</green>"
   formatting: minimessage      # Options: minimessage (default), legacy
+
+# Multi-line message list:
+welcome-kit:
+  type: send_message
+  formatting: minimessage
+  messages:
+    - "<gradient:#38BDF8:#818CF8><b>[Store]</b> Thank you for your purchase!</gradient>"
+    - "<yellow>Check your inventory for your reward items.</yellow>"
 ```
 
 ---

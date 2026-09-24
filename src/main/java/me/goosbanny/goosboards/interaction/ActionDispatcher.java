@@ -26,7 +26,7 @@ public final class ActionDispatcher {
     private ActionDispatcher() {
     }
 
-    public static void execute(
+    public static boolean execute(
             Player player,
             String sourceId,
             String currentSceneId,
@@ -35,13 +35,13 @@ public final class ActionDispatcher {
             EconomyGuard economyGuard,
             BiConsumer<Player, String> sceneSwitchHandler
     ) {
-        execute(player, null, sourceId, currentSceneId, actionKey, rawAction, economyGuard,
+        return execute(player, null, sourceId, currentSceneId, actionKey, rawAction, economyGuard,
                 (p, bId, target) -> {
                     if (sceneSwitchHandler != null) sceneSwitchHandler.accept(p, target);
                 });
     }
 
-    public static void execute(
+    public static boolean execute(
             Player player,
             String boardId,
             String sourceId,
@@ -52,7 +52,7 @@ public final class ActionDispatcher {
             InteractionRouter.SceneSwitchListener sceneSwitchListener
     ) {
         if (player == null || rawAction == null) {
-            return;
+            return false;
         }
 
         double price = getDoubleField(rawAction, "price", 0.0);
@@ -62,13 +62,14 @@ public final class ActionDispatcher {
             ChargeResult chargeResult = economyGuard.tryCharge(player.getUniqueId(), price, idempotencyKey);
             if (!chargeResult.success()) {
                 player.sendMessage("§cTransaction failed: " + chargeResult.receiptOrReason());
-                return;
+                return false;
             }
             charged = true;
         }
 
         try {
             executeActionBody(player, boardId, sourceId, currentSceneId, actionKey, rawAction, sceneSwitchListener, charged, price, economyGuard);
+            return true;
         } catch (Throwable t) {
             if (charged && economyGuard != null) {
                 economyGuard.refund(player.getUniqueId(), price);
@@ -137,5 +138,47 @@ public final class ActionDispatcher {
             return val != null ? Boolean.parseBoolean(String.valueOf(val)) : def;
         }
         return def;
+    }
+
+    public static java.util.List<String> getStringListField(Object obj, String... keys) {
+        for (String key : keys) {
+            java.util.List<String> list = extractStringList(obj, key);
+            if (!list.isEmpty()) {
+                return list;
+            }
+        }
+        return java.util.Collections.emptyList();
+    }
+
+    private static java.util.List<String> extractStringList(Object obj, String key) {
+        if (obj instanceof ConfigurationSection sec) {
+            if (sec.isList(key)) {
+                return sec.getStringList(key);
+            }
+            String single = sec.getString(key);
+            if (single != null && !single.isBlank()) {
+                return java.util.List.of(single);
+            }
+        } else if (obj instanceof Map<?, ?> map) {
+            Object val = map.get(key);
+            if (val instanceof java.util.List<?> list) {
+                java.util.List<String> result = new java.util.ArrayList<>(list.size());
+                for (Object item : list) {
+                    if (item != null) {
+                        String s = String.valueOf(item).trim();
+                        if (!s.isEmpty()) {
+                            result.add(s);
+                        }
+                    }
+                }
+                return result;
+            } else if (val != null) {
+                String single = String.valueOf(val).trim();
+                if (!single.isEmpty()) {
+                    return java.util.List.of(single);
+                }
+            }
+        }
+        return java.util.Collections.emptyList();
     }
 }

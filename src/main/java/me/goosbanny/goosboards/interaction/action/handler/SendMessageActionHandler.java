@@ -30,12 +30,20 @@ public class SendMessageActionHandler implements ActionHandler {
             double price,
             EconomyGuard economyGuard
     ) {
-        String msg = ActionDispatcher.getStringField(rawAction, "message", "");
-        if (!msg.isBlank()) {
-            String safeName = player.getName().replaceAll("[^a-zA-Z0-9_]", "");
+        java.util.List<String> messages = ActionDispatcher.getStringListField(rawAction, "messages", "message");
+        if (messages.isEmpty()) {
+            return;
+        }
+
+        String safeName = player.getName().replaceAll("[^a-zA-Z0-9_]", "");
+        String formatting = ActionDispatcher.getStringField(rawAction, "formatting", "minimessage");
+
+        for (String msg : messages) {
+            if (msg == null || msg.isBlank()) {
+                continue;
+            }
             String resolved = msg.replace("%player_name%", safeName);
             resolved = PlaceholderHook.setPlaceholders(player, resolved);
-            String formatting = ActionDispatcher.getStringField(rawAction, "formatting", "minimessage");
             DebugLogger.log("Action", "Player %s sent message action on '%s'",
                     player.getName(), sourceId);
             if ("minimessage".equalsIgnoreCase(formatting)) {

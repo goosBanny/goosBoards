@@ -944,7 +944,7 @@ scenes:
           position: "24 64"
           font-size: 22
           shadow: true
-          text: "&a&l$4.99 &7/ month"
+          text: "&a&l$50.00 &7Coins"
 
         r-desc1:
           type: pixel_text
@@ -979,16 +979,27 @@ scenes:
               vertical-alignment: center
               font-size: 22
               shadow: true
-              text: "&f&lSELECT VIP"
+              text: "&f&lBUY VIP ($50)"
 
       on-click:
+        buy:
+          type: command
+          price: 50.0
+          execute-from-console: true
+          commands:
+            - "lp user %player_name% parent add vip"
+            - "give %player_name% diamond 5"
+            - "say %player_name% has purchased VIP Rank for $50.00!"
         snd:
           type: play_sound
-          sound: "entity.experience_orb.pickup"
+          sound: "entity.player.levelup"
+          pitch: 1.2
         msg:
           type: send_message
           formatting: minimessage
-          message: "<aqua><b>[Store]</b> You selected <b>VIP Rank</b>! Run /buy vip in chat.</aqua>"
+          messages:
+            - "<green><b>[Store]</b> Successfully purchased <b>VIP Rank</b> for <b>$50.00</b>!</green>"
+            - "<yellow>5 bonus diamonds have been added to your inventory!</yellow>"
 
     rank-mvp:
       type: button
@@ -1016,7 +1027,7 @@ scenes:
           position: "24 64"
           font-size: 22
           shadow: true
-          text: "&a&l$9.99 &7/ month"
+          text: "&a&l$100.00 &7Coins"
 
         r-desc1:
           type: pixel_text
@@ -1051,16 +1062,27 @@ scenes:
               vertical-alignment: center
               font-size: 22
               shadow: true
-              text: "&f&lSELECT MVP"
+              text: "&f&lBUY MVP ($100)"
 
       on-click:
+        buy:
+          type: command
+          price: 100.0
+          execute-from-console: true
+          commands:
+            - "lp user %player_name% parent add mvp"
+            - "give %player_name% emerald 10"
+            - "say %player_name% has upgraded to MVP Rank for $100.00!"
         snd:
           type: play_sound
-          sound: "entity.experience_orb.pickup"
+          sound: "entity.player.levelup"
+          pitch: 1.5
         msg:
           type: send_message
           formatting: minimessage
-          message: "<green><b>[Store]</b> You selected <b>MVP Rank</b>! Run /buy mvp in chat.</green>"
+          messages:
+            - "<green><b>[Store]</b> Successfully purchased <b>MVP Rank</b> for <b>$100.00</b>!</green>"
+            - "<yellow>10 bonus emeralds have been added to your inventory!</yellow>"
 
     rank-elite:
       type: button
@@ -1088,7 +1110,7 @@ scenes:
           position: "24 64"
           font-size: 22
           shadow: true
-          text: "&a&l$19.99 &7/ month"
+          text: "&a&l$250.00 &7Coins"
 
         r-desc1:
           type: pixel_text
@@ -1123,16 +1145,27 @@ scenes:
               vertical-alignment: center
               font-size: 22
               shadow: true
-              text: "&f&lSELECT ELITE"
+              text: "&f&lBUY ELITE ($250)"
 
       on-click:
+        buy:
+          type: command
+          price: 250.0
+          execute-from-console: true
+          commands:
+            - "lp user %player_name% parent add elite"
+            - "give %player_name% netherite_ingot 3"
+            - "say %player_name% has achieved ELITE Rank for $250.00!"
         snd:
           type: play_sound
           sound: "entity.player.levelup"
+          pitch: 1.8
         msg:
           type: send_message
           formatting: minimessage
-          message: "<gold><b>[Store]</b> You selected <b>ELITE Rank</b>! Run /buy elite in chat.</gold>"
+          messages:
+            - "<gold><b>[Store]</b> Congratulations! You are now an <b>ELITE</b> supporter ($250.00 charged)!</gold>"
+            - "<yellow>3 bonus Netherite ingots have been added to your inventory!</yellow>"
 
     # 6. Return Button at Bottom
     return-btn:

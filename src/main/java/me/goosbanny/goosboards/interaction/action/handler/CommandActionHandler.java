@@ -30,9 +30,18 @@ public class CommandActionHandler implements ActionHandler {
             double price,
             EconomyGuard economyGuard
     ) {
-        String cmd = ActionDispatcher.getStringField(rawAction, "command", "");
-        if (!cmd.isBlank()) {
-            String safeName = player.getName().replaceAll("[^a-zA-Z0-9_]", "");
+        java.util.List<String> commands = ActionDispatcher.getStringListField(rawAction, "commands", "command");
+        if (commands.isEmpty()) {
+            return;
+        }
+
+        boolean console = ActionDispatcher.getBooleanField(rawAction, "execute-from-console", false);
+        String safeName = player.getName().replaceAll("[^a-zA-Z0-9_]", "");
+
+        for (String cmd : commands) {
+            if (cmd == null || cmd.isBlank()) {
+                continue;
+            }
             String resolved = cmd.replace("%player_name%", safeName);
             String finalCmd = PlaceholderHook.setPlaceholders(player, resolved);
             // Sanitize command string against newline/carriage-return command chaining injection
@@ -41,9 +50,9 @@ public class CommandActionHandler implements ActionHandler {
                 finalCmd = finalCmd.substring(1);
             }
             if (finalCmd.isEmpty()) {
-                return;
+                continue;
             }
-            boolean console = ActionDispatcher.getBooleanField(rawAction, "execute-from-console", false);
+
             DebugLogger.log("Action", "Player %s executed command '%s' (console=%s) on '%s'",
                     player.getName(), finalCmd, console, sourceId);
             if (console) {

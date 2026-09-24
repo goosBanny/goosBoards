@@ -192,7 +192,10 @@ public class DefaultInteractionRouter implements InteractionRouter {
                     return;
                 }
             }
-            executeAction(player, boardId, button, scene.id(), entry.getKey(), entry.getValue());
+            boolean success = executeAction(player, boardId, button, scene.id(), entry.getKey(), entry.getValue());
+            if (!success) {
+                break;
+            }
             try {
                 preLoc = player.getLocation();
             } catch (Throwable ignored) {}
@@ -446,8 +449,8 @@ public class DefaultInteractionRouter implements InteractionRouter {
         return null;
     }
 
-    private void executeAction(Player player, String boardId, ButtonComponent button, String currentSceneId, String actionKey, Object rawAction) {
-        ActionDispatcher.execute(player, boardId, button.getId(), currentSceneId, actionKey, rawAction, economyGuard, sceneSwitchListener);
+    private boolean executeAction(Player player, String boardId, ButtonComponent button, String currentSceneId, String actionKey, Object rawAction) {
+        return ActionDispatcher.execute(player, boardId, button.getId(), currentSceneId, actionKey, rawAction, economyGuard, sceneSwitchListener);
     }
 
     private String getStringField(Object obj, String key, String def) {
