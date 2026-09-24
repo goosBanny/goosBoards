@@ -1,74 +1,50 @@
-Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International Public License
+PolyForm Noncommercial License 1.0.0
+<https://polyformproject.org/licenses/noncommercial/1.0.0>
 
-By exercising the Licensed Rights (defined below), You accept and agree to be bound by the terms and conditions of this Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International Public License ("Public License"). To the extent this Public License may be interpreted as a contract, You are granted the Licensed Rights in consideration of Your acceptance of these terms and conditions, and the Licensor grants You such rights in consideration of benefits the Licensor receives from making the Licensed Material available under these terms and conditions.
+Copyright (c) 2026 goosBanny
 
-Section 1 – Definitions.
+7. Licensor Grants
 
-a. Adapted Material means material subject to Copyright and Similar Rights that is derived from or based upon the Licensed Material and in which the Licensed Material is translated, altered, arranged, transformed, or otherwise modified in a manner requiring permission under the Copyright and Similar Rights held by the Licensor. For purposes of this Public License, where the Licensed Material is a musical work, performance, or sound recording, Adapted Material is always produced where the Licensed Material is synched in timed relation with a moving image.
-b. Adapter's License means the license You apply to Your Copyright and Similar Rights in Your contributions to Adapted Material in accordance with the terms and conditions of this Public License.
-c. BY-NC-SA Compatible License means a license listed at creativecommons.org/compatiblelicenses, approved by Creative Commons as essentially the equivalent of this Public License.
-d. Commercial means primarily intended for or directed towards commercial advantage or monetary compensation.
-e. Copyright and Similar Rights means copyright and/or similar rights closely related to copyright including, without limitation, performance, broadcast, sound recording, and Sui Generis Database Rights, without regard to how the rights are labeled or categorized. For purposes of this Public License, the rights specified in Section 2(b)(1)-(2) are not Copyright and Similar Rights.
-f. Effective Technological Measures means those measures that, in the absence of proper authority, may not be circumvented under laws fulfilling obligations under Article 11 of the WIPO Copyright Treaty adopted on December 20, 1996, and/or similar international agreements.
-g. Exceptions and Limitations means fair use, fair dealing, and/or any other exception or limitation to Copyright and Similar Rights that applies to Your use of the Licensed Material.
-h. Licensed Material means the artistic or literary work, database, or other material to which the Licensor applied this Public License.
-i. Licensed Rights means the rights granted to You subject to the terms and conditions of this Public License, which are limited to all Copyright and Similar Rights that apply to Your use of the Licensed Material and that the Licensor has authority to license.
-j. Licensor means the individual(s) or entity(ies) granting rights under this Public License.
-k. NonCommercial means not primarily intended for or directed towards commercial advantage or monetary compensation.
-l. Share means to provide material to the public by any means or process that requires permission under the Licensed Rights, such as reproduction, public display, public performance, distribution, dissemination, communication, or importation, and to make material available to the public including in ways that members of the public may access the material from a place and at a time individually chosen by them.
-m. ShareAlike means requirement that if You Share Adapted Material You produce, You must license the Adapted Material under the same or compatible license.
-n. You means the individual or entity exercising the Licensed Rights under this Public License. Your has a corresponding meaning.
+7.1 Noncommercial License
+The licensor grants you a copyright license to run, modify, and copy the software for noncommercial purposes.
 
-Section 2 – Scope.
+7.2 Patent License
+The licensor grants you a patent license to make, have made, use, and sell your noncommercial applications of the software under patent claims the licensor can license that this software actually implements.
 
-a. License grant.
-1. Subject to the terms and conditions of this Public License, the Licensor hereby grants You a worldwide, royalty-free, non-sublicensable, non-exclusive, irrevocable license to exercise the Licensed Rights in the Licensed Material to:
-A. reproduce and Share the Licensed Material, in whole or in part, for NonCommercial purposes only; and
-B. produce, reproduce, and Share Adapted Material for NonCommercial purposes only.
-2. Exceptions and Limitations. For the avoidance of doubt, where Exceptions and Limitations apply to Your use, this Public License does not apply, and You do not need to comply with its terms and conditions.
-3. Term. The term of this Public License is specified in Section 6(a).
-4. Media and formats; technical modifications allowed. The Licensor authorizes You to exercise the Licensed Rights in all media and formats whether now known or hereafter created, and to make technical modifications necessary to do so. The Licensor waives and/or agrees not to assert any right or authority to forbid You from making technical modifications necessary to exercise the Licensed Rights, including technical modifications necessary to circumvent Effective Technological Measures. For purposes of this Public License, simply making modifications authorized by this Section 2(a)(4) never produces Adapted Material.
-5. Downstream recipients.
-A. Offer from the Licensor – Licensed Material. Every recipient of the Licensed Material automatically receives an offer from the Licensor to exercise the Licensed Rights under the terms and conditions of this Public License.
-B. Additional offer from the Licensor – Adapted Material. Every recipient of Adapted Material from You automatically receives an offer from the Licensor to exercise the Licensed Rights in the Adapted Material under the conditions of the Adapter's License You apply.
-C. No downstream restrictions. You may not offer or impose any additional or different terms or conditions on, or apply any Effective Technological Measures to, the Licensed Material if doing so restricts exercise of the Licensed Rights by any recipient of the Licensed Material.
-6. No endorsement. Nothing in this Public License constitutes or may be construed as permission to assert or imply that You are, or that Your use of the Licensed Material is, sponsored, endorsed, or granted official status by the Licensor or others designated to receive attribution as provided in Section 3(a)(1)(A)(i).
+8. Commercial Purposes
+A commercial purpose is any purpose that involves commercial advantage or monetary compensation.
 
-b. Other rights.
-1. Moral rights, such as the right of integrity, are not licensed under this Public License, nor are publicity, privacy, and/or other similar personality rights; however, to the extent possible, the Licensor waives and/or agrees not to assert any such rights held by the Licensor to the limited extent necessary to allow You to exercise the Licensed Rights, but not otherwise.
-2. Patent and trademark rights are not licensed under this Public License.
-3. To the extent possible, the Licensor waives any right to collect royalties from You for the exercise of the Licensed Rights, whether directly or through a collecting society under any voluntary or waivable statutory or compulsory licensing scheme. In all other cases the Licensor expressly reserves any right to collect such royalties, including when the Licensed Material is used other than for NonCommercial purposes.
+8.1 Permitted Uses
+Noncommercial purposes include:
+8.1.1 personal use for personal expenses, hobbies, or leisure activities
+8.1.2 education and research
+8.1.3 evaluation and testing, but not production use
+8.1.4 government and nonprofit organization use, except for production use in commercial activities or in activities that compete with commercial products
 
-Section 3 – License Conditions.
+8.2 Prohibited Uses
+Commercial purposes include:
+8.2.1 running the software in production for any business purpose
+8.2.2 selling access to the software as a service (SaaS)
+8.2.3 selling or licensing products that include the software
+8.2.4 using the software to provide commercial services to others
 
-Your exercise of the Licensed Rights is expressly made subject to the following conditions.
+9. Notices
+You must ensure that anyone who gets a copy of any part of this software from you also gets a copy of this license.
 
-a. Attribution.
-1. If You Share the Licensed Material (including in modified form), You must:
-A. retain the following if it is supplied by the Licensor with the Licensed Material:
-i. identification of the creator(s) of the Licensed Material and any others designated to receive attribution;
-ii. a copyright notice;
-iii. a notice that refers to this Public License;
-iv. a notice that refers to the disclaimer of warranties;
-v. a URI or hyperlink to the Licensed Material to the extent reasonably practicable;
-B. indicate if You modified the Licensed Material and retain an indication of any previous modifications; and
-C. indicate the Licensed Material is licensed under this Public License, and include the text of, or the URI or hyperlink to, this Public License.
-2. You may satisfy the conditions in Section 3(a)(1) in any reasonable manner based on the medium, means, and context in which You Share the Licensed Material.
+10. No Other Rights
+These terms do not grant you any other rights, including patent licenses except as stated in Section 7.2.
 
-b. NonCommercial.
-You may not exercise the Licensed Rights in any manner that is primarily intended for or directed towards commercial advantage or monetary compensation.
-WITHOUT LIMITATION, THIS PROHIBITS:
-1. Selling, reselling, sublicensing, or charging a fee for access to the software, binary builds, source code, forks, or derivative works (including custom commissions).
-2. Bundling the software or derivative works as part of a paid product, subscription service, or commercial server setup sold to third parties.
+11. Defense Against Claims
+If anyone makes a claim against you that the software infringes a patent, copyright, trademark, or other intellectual property right, you agree to notify the licensor.
 
-c. ShareAlike.
-In addition to the conditions in Section 3(a) and Section 3(b), if You Share Adapted Material You produce, the following conditions also apply:
-1. The Adapter's License You apply must be a Creative Commons license with the same License Elements, this version or later, or a BY-NC-SA Compatible License.
-2. You must include the text of, or the URI or hyperlink to, the Adapter's License You apply. You may satisfy this condition in any reasonable manner based on the medium, means, and context in which You Share Adapted Material.
-3. You may not offer or impose any additional or different terms or conditions on, or apply any Effective Technological Measures to, Adapted Material that restrict exercise of the rights granted under the Adapter's License You apply.
-4. PUBLIC FORKS ONLY: All forks, adaptations, and derivative works made available to any third party or deployed on publicly accessible servers must make their complete source code publicly accessible under these same license terms. Private proprietary derivatives and closed-source monetization are strictly prohibited.
+12. Fair Use
+These terms do not limit your rights under fair use, fair dealing, or other copyright exceptions.
 
-Section 4 – Disclaimer of Warranties and Limitation of Liability.
+13. No Reverse Engineering
+These terms do not prohibit reverse engineering for purposes permitted by law.
 
-a. UNLESS OTHERWISE SEPARATELY UNDERTAKEN BY THE LICENSOR, TO THE EXTENT POSSIBLE, THE LICENSOR OFFERS THE LICENSED MATERIAL AS-IS AND AS-AVAILABLE, AND MAKES NO REPRESENTATIONS OR WARRANTIES OF ANY KIND CONCERNING THE LICENSED MATERIAL, WHETHER EXPRESS, IMPLIED, STATUTORY, OR OTHER. THIS INCLUDES, WITHOUT LIMITATION, WARRANTIES OF TITLE, MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT, ABSENCE OF LATENT OR OTHER DEFECTS, ACCURACY, OR THE PRESENCE OR ABSENCE OF ERRORS, WHETHER OR NOT KNOWN OR DISCOVERABLE.
-b. TO THE EXTENT POSSIBLE, IN NO EVENT WILL THE LICENSOR BE LIABLE TO YOU ON ANY LEGAL THEORY (INCLUDING, WITHOUT LIMITATION, NEGLIGENCE) OR OTHERWISE FOR ANY DIRECT, SPECIAL, INDIRECT, INCIDENTAL, CONSEQUENTIAL, PUNITIVE, EXEMPLARY, OR OTHER LOSSES, COSTS, EXPENSES, OR DAMAGES ARISING OUT OF THIS PUBLIC LICENSE OR USE OF THE LICENSED MATERIAL, EVEN IF THE LICENSOR HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH LOSSES, COSTS, EXPENSES, OR DAMAGES.
+14. Termination
+If you violate any of these terms, your rights under this license end immediately.
+
+15. Disclaimer of Warranties
+As far as the law allows, the software comes as is, without any warranty or condition, and the licensor will not be liable to you for any damages arising out of these terms or the use or inability to use the software.

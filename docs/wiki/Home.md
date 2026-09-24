@@ -41,7 +41,7 @@ Explore the comprehensive guides below to learn how to install, configure, and c
 
 ## 📄 License & Terms
 
-GoosBoards is released under the **Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)** license.
-* **Free to Use**: You may freely use GoosBoards on your server or network.
-* **Public Forks Only**: If you fork or modify the codebase, your changes must be published openly under the exact same license terms.
-* **No Commercial Resale**: You are strictly prohibited from selling, reselling, charging for custom builds, or paywalling access to the plugin or derivative works.
+GoosBoards is released under the **[PolyForm Noncommercial License 1.0.0](https://polyformproject.org/licenses/noncommercial/1.0.0)**.
+* **Noncommercial Use Permitted**: You may run, modify, and copy the software for personal use, hobbies, education, and testing.
+* **Commercial Purposes Prohibited**: Any use involving commercial advantage, monetary compensation, selling access, or selling/licensing products containing the software is strictly prohibited.
+* **Notice Retention**: Any distribution must include a copy of the license.

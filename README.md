@@ -9,7 +9,7 @@
   <img src="https://img.shields.io/badge/Platform-Paper%20%7C%20Folia-1976D2?style=for-the-badge&logo=minecraft&logoColor=white" alt="Paper and Folia" />
   <img src="https://img.shields.io/badge/Protocol-1.19.4%20--%201.21.x-52B152?style=for-the-badge" alt="Protocol Version" />
   <img src="https://img.shields.io/badge/Dependencies-PacketEvents%202.x-8A2BE2?style=for-the-badge" alt="PacketEvents" />
-  <img src="https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-FF4081?style=for-the-badge" alt="CC BY-NC-SA 4.0" />
+  <img src="https://img.shields.io/badge/License-PolyForm%20Noncommercial%201.0.0-FF4081?style=for-the-badge" alt="PolyForm Noncommercial 1.0.0" />
 </p>
 
 ---
@@ -131,9 +131,8 @@ The compiled plugin will be located in `build/libs/GoosBoards-<version>.jar`.
 
 ## 📄 License & Terms
 
-GoosBoards is licensed under the **[Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)](LICENSE)** license.
+GoosBoards is licensed under the **[PolyForm Noncommercial License 1.0.0](LICENSE)**.
 
-* ✅ **Free to Use**: You are free to use GoosBoards on your Minecraft servers (public or private).
-* ✅ **Public Forks Allowed**: You are welcome to fork, modify, and build upon the source code for your own needs.
-* 🔒 **Public Modifications Only**: Any forks, adaptations, or derivative works distributed or deployed on public servers **must** have their source code made publicly available under these exact same license terms.
-* ❌ **No Resale / Commercial Distribution**: You **cannot** sell, resell, charge money for, or paywall the software, source code, forks, or custom builds.
+* ✅ **Noncommercial Use Permitted**: You may run, modify, and copy the software for personal use, hobbies, education, and testing.
+* ❌ **Commercial Purposes Prohibited**: Commercial purposes (monetary compensation, commercial advantage, selling access as a service, or selling/licensing products that include the software) are strictly prohibited.
+* 📋 **Notices Required**: Anyone who receives a copy of any part of this software must also receive a copy of the license.
