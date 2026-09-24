@@ -1,0 +1,79 @@
+name: Build and Release
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: "release"
+  cancel-in-progress: true
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Java 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'oracle'
+          java-version: '25'
+
+      - name: Setup Gradle & Dependency Cache
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-read-only: false
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build and Test
+        run: ./gradlew test shadowJar --no-daemon
+
+      - name: Prepare Release Asset
+        run: |
+          mkdir -p release-assets
+          JAR_FILE=$(find build/libs -name "GoosBoards-*.jar" ! -name "*-original.jar" | head -n 1)
+          if [ -z "$JAR_FILE" ]; then
+            echo "Error: No GoosBoards jar found in build/libs/"
+            exit 1
+          fi
+          cp "$JAR_FILE" release-assets/GoosBoards.jar
+          echo "Release asset prepared: release-assets/GoosBoards.jar"
+
+      - name: Update Latest Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Remove any previous 'latest' tag and release to keep only one release
+          gh release delete latest --cleanup-tag --yes 2>/dev/null || true
+          git push origin :refs/tags/latest 2>/dev/null || true
+          git tag -d latest 2>/dev/null || true
+
+          # Create fresh 'latest' tag pointing to current commit
+          git tag -a latest -m "Latest GoosBoards build from master"
+          git push origin latest --force
+
+          # Publish the single 'Latest GoosBoards' release
+          gh release create latest release-assets/GoosBoards.jar \
+            --title "Latest GoosBoards" \
+            --notes "### 🪿 Latest GoosBoards Automated Release
+
+          Automated build compiled from commit [\`${GITHUB_SHA::7}\`](${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/commit/${GITHUB_SHA}).
+
+          * **Target Platform:** Paper & Folia 1.20.4 – 1.21.x
+          * **Java Runtime:** Java 21 or Java 25 LTS
+          * **Required Dependency:** [PacketEvents 2.x](https://github.com/retrooper/packetevents) in your server's \`plugins/\` folder
+          * **License:** [PolyForm Noncommercial 1.0.0](LICENSE)
+          " \
+            --latest
